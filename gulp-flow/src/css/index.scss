@@ -1,0 +1,14 @@
+
+
+.aa {
+    animation: toLeft .25s 1;
+    width: 100px;
+    height: 200px;
+    background: #333;
+}
+
+@keyframes toLeft {
+    100% {
+        transform: translateX(100px);
+    }
+}
