@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script type="text/javascript" src="js/util.js" ></script>
+		<script>
+			var data = util.getUrlData('123123123123123123?aa=2&b=123123');
+			util.Cookie.write('czl',"aa=2")
+			var a = util.Cookie.read('czl','aa',true)
+			console.log(a)
+		</script>
+	</body>
+</html>
