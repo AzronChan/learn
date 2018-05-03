@@ -135,11 +135,11 @@
 		<div id="vfor">
 			<h3>列表渲染</h3>
 			<p v-for="(i,index) in list">
-				{{ index + 1 }}.{{ i.val }}
+				index{{ index + 1 }}=>值{{ i.val }}
 			</p>
 			<ul>
 				<li v-for="(value,key,index) in obj" v-if='value == "one"'>
-					遍历对象 {{key}}:{{ value }}
+					遍历对象 键值{{key}}:值{{ value }}
 				</li>
 			</ul>
 			<p>v-for优先级高于v-if</p>
@@ -148,7 +148,7 @@
 					遍历对象 {{key}}:{{ value }}
 				</li>
 			</ul>
-			<pre>Vue.set(vfor.obj,'one','thr')</pre>改变对象属性
+			<pre>Vue.set(vfor.obj,'one','thr')</pre>外部方法改变对象属性
 		</div>
 		<pre>
 			var vfor = new Vue({
