@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style>
+			pre,
+			div,
+			span,
+			p {
+				margin: 0px;
+				padding: 0px;
+			}
+			
+			body,
+			html {
+				font-family: "微软雅黑"
+			}
+			
+			.red {
+				background: red;
+			}
+			
+			pre {
+				display: inline-block;
+				padding: 0 5px;
+				border: 1px solid #ccc;
+				background: lemonchiffon;
+			}
+			
+			.my-fade-enter-active,
+			.my-fade-leave-active {
+				transition: opacity .5s
+			}
+			
+			.my-fade-enter,
+			.my-fade-leave-to
+			/* .fade-leave-active in below version 2.1.8 */
+			
+			{
+				opacity: 0
+			}
+		</style>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+
+	</head>
+
+	<body>
+		<span @click="console" :title="title" v-bind:class="{ red : ok, 'csstext' : classNameOption,aa : 1,bb:-50}">{{ a + 1 }} {{ ok ? "yes" : "no"}}
+			<a :href="url">baidu.com</a> {{ addOne }}  
+			watchVal + changeWatchVal = {{ changeWatchVal + watchVal }}
+			<br />
+			{{ getset }} {{ getChange }}
+		</span>
+		<p v-if="ok">see</p>
+		<div :class="[classNameOne,'classNameTwo', classNameThr ? 'classNameThr' : '',{classNameFour : classNameFour}]" id="classArr">
+			class绑定数组写法 <pre>v-bind</pre>可以简写成 <pre>:</pre>
+		</div>
+		<hr />
+		<div id="style" v-bind:style="{ fontSize : fontsize, color : color}">
+			绑定内联样式 可以用驼峰式 或短横线分隔 来命名：
+			<p v-bind:style="styleObj">直接绑定到一个样式对象</p>
+			<p v-bind:style="[styleObj,styleArr]">绑定数组</p>
+		</div>
+		<pre>
+			var v_style = new Vue({
+				el: '#style',
+				data: {
+					fontsize: '18px',
+					color: '#666',
+					styleObj: {
+						fontSize: '18px',
+						color: '#999',
+						background: '#f1f1f1'
+					},
+					styleArr: {
+						marginTop: '20px'
+					}
+				}
+			})
+		</pre>
+		<script type="text/javascript">
+			var v_style = new Vue({
+				el: '#style',
+				data: {
+					fontsize: '18px',
+					color: '#666',
+					styleObj: {
+						fontSize: '18px',
+						color: '#999',
+						background: '#f1f1f1'
+					},
+					styleArr: {
+						marginTop: '20px'
+					}
+				}
+			})
+		</script>
+		<hr />
+		<div id="vif">
+			<p>条件渲染 v-if销毁dom,v-show:消失影藏dom</p>
+			<p v-if='val'>
+				v-if:true 多元素切换
+				<a>a</a>
+				<span>span</span>
+			</p>
+			<p v-if='elseVal'>elseVal:true</p>
+			<p v-else>elseVal:false</p>
+			<p v-if="elseif === 1">vif.elseif = 1</p>
+			<p v-else-if="elseif === 2">vif.elseif = 2</p>
+			<p v-else-if="elseif === 3">vif.elseif = 3</p>
+		</div>
+		<pre>
+			var vif = new Vue({
+				el: '#vif',
+				data: {
+					val: true,
+					elseVal: false,
+					elseif: 3
+				}
+			})
+		</pre>
+		<script>
+			var vif = new Vue({
+				el: '#vif',
+				data: {
+					val: true,
+					elseVal: false,
+					elseif: 3
+				}
+			})
+		</script>
+		<hr />
+		<div id="vfor">
+			<h3>列表渲染</h3>
+			<p v-for="(i,index) in list">
+				{{ index + 1 }}.{{ i.val }}
+			</p>
+			<ul>
+				<li v-for="(value,key,index) in obj" v-if='value == "one"'>
+					遍历对象 {{key}}:{{ value }}
+				</li>
+			</ul>
+			<p>v-for优先级高于v-if</p>
+			<ul>
+				<li v-for="(value,key,index) in obj">
+					遍历对象 {{key}}:{{ value }}
+				</li>
+			</ul>
+			<pre>Vue.set(vfor.obj,'one','thr')</pre>改变对象属性
+		</div>
+		<pre>
+			var vfor = new Vue({
+				el: '#vfor',
+				data: {
+					list: [{
+						val: 'a'
+					}, {
+						val: 'b'
+					}],
+					obj: {
+						one: 'one',
+						two: 'two'
+					}
+				}
+			})
+		</pre>
+		<script type="text/javascript">
+			var vfor = new Vue({
+				el: '#vfor',
+				data: {
+					list: [{
+						val: 'a'
+					}, {
+						val: 'b'
+					}],
+					obj: {
+						one: 'one',
+						two: 'two'
+					}
+				}
+			})
+		</script>
+		
+		<div id="vevent">
+			<h3>时间绑定</h3>
+			<p v-on:click="clickEvent(3,$event)">
+				<button v-on:click="clickEvent(1,$event)">click me</button>
+				<button v-on:click="clickEvent(1,$event)">click me</button>
+				<button @click.ctrl.stop="clickEvent(7,$event)">修饰符应与其他系统修饰符组合使用,ALT+CTRL也可触发</button>
+				<button @click.middle.stop="clickEvent(9,$event)">鼠标滑轮按下触发</button>
+				<button @click.ctrl.exact.stop="clickEvent(8,$event)">限定CTRL</button>
+				<button>只触发自身<i v-on:click.self.stop="clickEvent(5,$event)">111111111</i></button>
+				<button v-on:click.once="clickEvent(2,$event)">只绑定一次</button>
+				<input @keyup.enter="clickEvent(6,$event)" />
+			</p>
+		</div>
+		<div id="form">
+			<h3>表单绑定</h3>
+			<div id="">
+				<input type="text" v-model="message" name="" id="" value="" placeholder="输入" />
+				<span>输入拼音时不触发 : {{ message }}</span>
+			</div>
+			<div class="">
+				<label for="checkbox">13123<input type="checkbox" name="checkbox" id="checkbox"/></label>
+			</div>
+			<div>
+				<input v-model.number="num" type="text" placeholder="请输入数字">
+				<span>修饰符，只可用数字 ： {{ num }}</span>
+			</div>
+			<div>
+				<input v-model.trim="str" type="text" />
+				<span id="">输入空格被过滤： {{ str }}</span>
+			</div>
+		</div>
+		<div id="template">
+			<h3>组件</h3>
+			<template1></template1>
+			<template2></template2>
+			<template3></template3>
+			<input v-model="parentMsg">
+			<template5 v-bind:msg='parentMsg'></template5>
+			<template6 v-bind:a='todo.text'></template6>
+			<template7 v-bind:obj='obj'></template7>
+			<template8></template8>
+			<template9 :message="poem[0]" :time="age"></template9>
+			<template10 :message="message"></template10>
+			<template11 :num='propNum' :obj='propObj'></template11>
+			<template12 :num='num' v-on:increment='incrementTotal'></template12>
+			<template13 :num='num' @click.native="incrementCounter"></template13>
+			<template14 :num.sync='num'></template14>
+
+			<!--<template15 :num='price' v-on:input="price"></template15>-->
+			<!--模板引用中的click要写在字符串中，否则为引用父组件事件-->
+			<template16 :num='num' v-on:input="num = arguments[0];console.log(111)"></template16>
+			<!--template16 v-on:input里为执行方法=-->
+			<template17 v-model="num"></template17>
+			<template18>
+				<h2>这是插入的slot</h2>
+			</template18>
+			<template19>
+				<h6 slot='header'>头部</h6>
+				<h6 slot='main'>主体</h6>
+				<h6 slot='footer'>尾部</h6>
+			</template19>
+			<!--component + is动态切换 keep-alive保存节点-->
+			<div class='kepp_alive'>
+				<keep-alive include="template20">
+					<component :is=view>
+
+					</component>
+				</keep-alive>
+			</div>
+
+			<ul>
+				<template4></template4>
+			</ul>
+		</div>
+		<div id="vbind">
+			<h3>自定义指令</h3>
+			<!--改变aa值触发-->
+			<input v-czl='aa'>
+		</div>
+		<div id="render">
+			<h1>render</h1>
+			<child>
+				<p slot='fuckit'>fuck it</p>
+			</child>
+		</div>
+		<script>
+			var render = new Vue({
+				el: '#render',
+				components: {
+					child: {
+						render: function(h) {
+							return h('h1', {
+								style: {
+									color: 'red',
+									fontSize: '24px'
+								},
+								attrs : {
+									title : 'vnode'
+								},
+								class : {
+									title : true
+								},
+								on : {
+									click : this.clickFn
+								},
+//								domProps :{
+//									innerHTML : 'wtf'
+//								},
+							},[h('p','VNodes'),h('span',this.$slots.fuckit)])
+//							return h('h1', this.$slots.default)
+						},
+						methods : {
+							clickFn : function(){
+								this.$emit('wtf')
+								console.log('vnode')
+							},
+							parentClickFn:function(){
+								console.log(111)
+							}
+						}
+					}
+				},
+				methods :{
+					parentClickFn : function(){
+						console.log('parent')
+					}
+				}
+			})
+			var vbind = new Vue({
+				el: '#vbind',
+				data: {
+					aa: 1
+				},
+				directives: {
+					//注册局部自定义指令
+					czl: function() {
+						console.log(11111)
+					}
+				}
+			})
+
+			//组件必须比vue示例先声明
+			var template2 = {
+				template: '<div>模板输出2</div>'
+			}
+			var template = new Vue({
+				el: '#template',
+				data: {
+					parentMsg: '动态prop',
+					todo: {
+						text: '传入对象'
+					},
+					obj: {
+						text: '传递对象'
+					},
+					obj2: {
+						text: '传递对象2'
+					},
+					message: ' this is a message',
+					poem: ['山有木兮木有枝', '心悦君兮君不知'],
+					age: '3000年',
+					propNum: undefined,
+					propObj: '111',
+					num: 111111111,
+					price: 100,
+					view: 'template20'
+				},
+				methods: {
+					incrementTotal: function() {
+						this.num += 1
+					},
+					incrementCounter: function() {
+						console.log('使用父组件时间')
+					},
+					price: function() {
+						console.log('111')
+					}
+				},
+				components: {
+					// 使用 kebab-case 注册 推荐写法
+					//					  'kebab-cased-component': { /* ... */ },
+					//					  // 使用 camelCase 注册
+					//					  'camelCasedComponent': { /* ... */ },
+					//					  // 使用 PascalCase 注册
+					//					  'PascalCasedComponent': { /* ... */ }
+					template20: {
+						template: `
+							<div>动态切换1</div>
+						`
+					},
+					template21: {
+						template: `
+							<div>动态切换2</div>
+						`
+					},
+					template22: {
+						template: `
+							<div>动态切换3</div>
+						`
+					},
+					template19: {
+						template: `
+							<div>
+								<h3>具体名字的插槽<h3>
+								<slot name='header'></slot>
+								<slot name='main'></slot>
+								<slot name='footer'></slot>
+							</div>
+						`
+					},
+					template18: {
+						template: `
+							<div>
+								<h3>slot<h3>
+								<slot>看得见</slot>
+							</div>
+						`
+					},
+					template17: {
+						//v-model 简单
+						props: ['num'],
+						template: `
+							<input type="text" v-bind:value="num" v-on:input="input($event.target.value)">
+						`,
+						//此处v-on input 为绑定子组件中的 input时间
+						methods: {
+							input: function(value) {
+								//触发父组件 childrencall事件
+								this.$emit('input', value)
+							}
+						}
+					},
+					template16: {
+						//v-model 复杂版
+						props: ['num'],
+						template: `
+							<input type="text" v-bind:value="num" v-on:input="input($event.target.value)">
+						`,
+						//此处v-on input 为绑定子组件中的 input时间
+						methods: {
+							input: function(value) {
+								//触发父组件 childrencall事件
+								this.$emit('input', value)
+							}
+						}
+					},
+					//					template15 :{
+					//						//v-model
+					//						props :['num'],
+					//						template : `
+					//							<input type="text" v-bind:value="num" v-on:input='callParent($event.target.value)'>
+					//						`,
+					//						methods : {
+					//							callParent : function(value){
+					//								conso
+					//								this.$emit('input',value)
+					//							}
+					//						}
+					//					},
+					template14: {
+						//.sync 添加双向绑定
+						props: ['num'],
+						template: '<div @click="callParent"> {{ num }} template14</div>',
+						methods: {
+							callParent: function() {
+								this.$emit('update:num', ++this.num)
+							}
+						}
+					},
+					template13: {
+						//.native:使用父组件中的方法，而不是自组建使用注册的事件
+						props: ['num'],
+						template: '<div> {{ num }} 123123</div>',
+						methods: {
+							incrementCounter: function() {
+								console.log(2222)
+							}
+						}
+					},
+					template12: {
+						//子组件通过 v-on注册事件，$emit触发事件，例子意思为，v-on:click 绑定了点击事件incrementCounter；
+						//模板中 v-on:increment为注册自定义事件，方法名为increment，事件绑定为父组件的'incrementTotal'方法
+						//子组件点击触发incrementCounter方法，incrementCounter里用$emit触发increment事件，从而触发父组件中的'incrementTotal'方法；
+						props: ['num'],
+						template: '<div @click="incrementCounter"> {{ num }} </div>',
+						methods: {
+							incrementCounter: function() {
+								this.$emit('increment')
+							}
+						}
+					},
+					template11: {
+						//开发版本会抛出异常
+						props: {
+							num: {
+								type: Number,
+								default: 100
+							},
+							obj: {
+								type: Object
+							}
+						},
+						template: '<div> {{ num }} 22222222 {{obj}}</div>'
+					},
+					'template1': {
+						template: '<div>模板输出</div>'
+					},
+					template2: template2,
+					template3: template3,
+					'template4': {
+						template: '<li> {{ message }} <li>',
+						data: function() {
+							//组件里的data属性必须为函数
+							return {
+								message: '模板data'
+							}
+						}
+					},
+					'template5': {
+						props: ['msg'],
+						template: '<div> {{ msg }}<div>'
+					},
+					'template6': {
+						props: ['a'],
+						template: '<div> {{ a }}<div>'
+					},
+					template7: {
+						props: ['obj'],
+						template: '<div> {{ obj.text }} </div>'
+					},
+					template8: {
+						template: '<div> {{ obj2.aa }} </div>',
+						data: function() {
+							return {
+								obj2: {
+									aa: 1
+								}
+							}
+						}
+					},
+					template9: {
+						props: ['message', 'time'],
+						template: `
+						<div>
+						     <h3>{{title}}</h3>
+						     <p>{{ message }}</p>
+						     <i>{{time}}</i>
+						</div>`,
+						data() {
+							return {
+								title: '越人歌'
+							}
+						}
+					},
+					template10: {
+						//template 只可为一个大节点，包含所有小节点，否则只生成第一个节点的数据
+						props: ['message'],
+						template: `
+						<div>
+							<h3> {{ message }} </h3>
+							<p> {{ title }}</p>
+						</div>
+						`,
+						data() {
+							return {
+								title: '这是个标题'
+							}
+						}
+					},
+
+				}
+			})
+			var template3 = {
+				template: '<div>模板输出3</div>'
+			}
+		</script>
+		<div id="transition">
+			<transition name='my-fade' :duration="2000" v-on:leave='leave'>
+				<p v-show="show">show</p>
+			</transition>
+			<button @click="show = !show">click me</button>
+		</div>
+		<div id="filters">
+			<h3>过滤器</h3>
+			<p> {{ num | numAddOne | numAddTwo}} </p>
+		</div>
+
+		<script>
+			document.body.scrollTop = 100000;
+			var filter = new Vue({
+				el: '#filters',
+				data: {
+					num: 1
+				},
+				filters: {
+					numAddOne: function(num) {
+						return num + 1;
+					},
+					numAddTwo: function(num) {
+						return num + 2;
+					}
+				}
+			})
+
+			var transition = new Vue({
+				el: '#transition',
+				data: {
+					show: true
+				},
+				methods: {
+					leave: function() {
+						console.log('离开');
+						done();
+						//当只用 JavaScript 过渡的时候， 在 enter 和 leave 中，回调函数 done 是必须的 。否则，它们会被同步调用，过渡会立即完成。
+					}
+				}
+			})
+
+			var form = new Vue({
+				el: '#form',
+				data: {
+					message: '',
+					num: '',
+					str: ''
+				}
+			})
+			var vevent = new Vue({
+				el: '#vevent',
+				methods: {
+					clickEvent(num, e) {
+						console.log(num, e)
+					}
+				}
+			})
+			
+			
+			
+			var em = new Vue({
+				el: '#classArr',
+				data: {
+					classNameOne: 'classNameOne',
+					classNameThr: true,
+					classNameFour: true
+				}
+			})
+			var data = {
+				a: 1,
+				ok: true,
+				classNameOption: true,
+				url: "https://www.baidu.com",
+				title: '这是标题',
+				watchVal: 'home',
+				changeWatchVal: 'come in ',
+				getVal: 'get',
+				getChange: 'get change before'
+			}
+			var vm = new Vue({
+				el: "span",
+				data: data,
+				computed: {
+					addOne: function() {
+						console.log(this.ok)
+						this.ok === true ? (this.ok = false) : (this.ok = true);
+						var val = this.a;
+						return val;
+					},
+					getset: {
+						//不明觉厉 默认只有get方法
+						get: function() {
+							return this.getVal
+						},
+						set: function(val) {
+							console.log(val)
+							this.getVal = 'get change after'
+						}
+					}
+				},
+				watch: {
+					//异步时比较有用，同步的一般使用computed
+					watchVal: function(val) {
+						console.log(val);
+						this.changeWatchVal = 'get away from ';
+					}
+				},
+				created: function() {
+					console.log(222)
+				},
+				beforeCreate: function() {
+					console.log(233)
+				},
+				methods: {
+					clickEvent(num, e) {
+						console.log(1)
+					},
+					console() {
+						console.log(vm.a)
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

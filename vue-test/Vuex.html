@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vuex.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id = "app">
+			
+		</div>
+		<script>
+			const store = new Vuex.Store({
+				state : {
+					count : 0,
+					addCount : 0
+				},
+				mutations : {
+					add (state,payload) {
+						state.count += payload.n;
+					},
+					addMutation(state,payload) {
+						state.addCount += payload.n;
+					}
+				},
+				actions : {
+					//action为异步
+					addAction ({ commit },payload) {
+						setTimeout(function(){
+							commit('addMutation',payload)
+						},1000)
+					}
+				}
+			})
+			
+			var app = new Vue({
+				el : '#app',
+				store,	//通过在根实例中注册 store 选项，该 store 实例会注入到根组件下的所有子组件中，且子组件能通过 this.$store 访问到
+				computed : {
+					count () {
+						return this.$store.state.count;
+					},
+					addCount(){
+						return this.$store.state.addCount;
+					}
+				},
+				render : function(h){
+					return h('div',{},[h('p',this.count),h('p',this.addCount)])
+				}
+			})
+			
+			
+			var timer = setInterval(function(){
+//				store.commit('add',10);
+				//对象提交
+//				store.commit({
+//					type : 'add',
+//					n: 10
+//				})
+				store.commit('add',{n:10})
+				store.dispatch({
+					type : 'addAction',
+					n:10
+				})
+			},1000)
+			
+			var a = 1;
+			a => ++a;
+			console.log(a)
+		</script>
+	</body>
+</html>
