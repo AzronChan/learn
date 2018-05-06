@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<p>this is login cb</p>
+		<img src="./readimg"  width="200" height="200"/>
+		<!--同时输出图片以及文字-->
+		<p>
+			get请求
+		</p>
+		<form action="./ajaxget" method="get">
+			<table>
+				<tr>
+					<td>email:</td>
+					<td>
+						<input name="email" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<td>密码:</td>
+					<td>
+						<input name="password" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" value="登录" />
+					</td>
+				</tr>
+			</table>
+		</form>
+		<p>
+			post请求
+		</p>
+		<form action="./ajaxpost" method="post">
+			<table>
+				<tr>
+					<td>email:</td>
+					<td>
+						<input name="email" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<td>密码:</td>
+					<td>
+						<input name="password" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" value="登录" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>
