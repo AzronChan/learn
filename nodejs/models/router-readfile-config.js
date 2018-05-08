@@ -128,6 +128,42 @@ var config = {
 			var afterCb = commonHtmlCb(req,res);
 			readfile('./files/login.html', afterCb);
 		}
+	},
+	/*
+	 * 模板替换
+	 * 类似smarty
+	 */
+	ajaxtemplate : (req,res) => {
+		var  post  =  '',postArr = ['email','password'],dataStr='';          //定义了一个post变量，用于暂存请求体的信息      
+      
+        req.on('data',  function(chunk){        //通过req的data事件监听函数，每当接受到请求体的数据，就累加到post变量中      
+            post  +=  chunk;      
+        });      
+        //-------注意异步-------------      
+        req.on('end',  function(){        //在end事件触发后，通过querystring.parse将post解析为真正的POST请求格式，然后向客户端返回。      
+        	console.log('querystring:' + querystring);
+            post  =  querystring.parse(post);      
+            console.log('email:'+post['email']+'\n');        
+            console.log('pwd:'+post['password']+'\n');
+//          for (var i in post){
+//          	postArr = post[i];
+//          }
+        });
+        if(req.url !== "/favicon.ico") {
+			function afterCb(data){
+				res.writeHead(200, {
+					'Content-Type': 'text/html;charset=utf-8'
+				})
+				dataStr = data.toString();
+				for(var i = 0; i < postArr.length; i++){
+					var reg = new RegExp('{' + postArr[i] +  '}','gm');
+					dataStr = dataStr.replace(reg,post[postArr[i]]);
+				}
+				res.write(dataStr);
+				res.end('路由异步读取文件结束')
+			}
+			readfile('./files/login.html', afterCb);
+		}
 	}
 }
 
