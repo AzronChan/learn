@@ -1,5 +1,6 @@
-var fs = require('fs'); //操作文件类
-let url = require('url'),
+let fs = require('fs')
+	url = require('url'),
+	async = require('async'),
 	querystring  =  require('querystring');  //post需导入 
 /*
  * 读取文件
@@ -145,9 +146,6 @@ var config = {
             post  =  querystring.parse(post);      
             console.log('email:'+post['email']+'\n');        
             console.log('pwd:'+post['password']+'\n');
-//          for (var i in post){
-//          	postArr = post[i];
-//          }
         });
         if(req.url !== "/favicon.ico") {
 			function afterCb(data){
@@ -164,7 +162,96 @@ var config = {
 			}
 			readfile('./files/login.html', afterCb);
 		}
-	}
+	},
+	/*
+	 * 异步流程控制
+	 * 串行无关联
+	 * 多个函数依次执行,之间没有数据交换,其中一个函数出错，后续函数不再执行 
+	 */
+	aysncSeries : (req,res) => {
+		async.series({     
+		    one: function(callback){     
+		        callback(null, 1);     
+		    },     
+		    two: function(callback){     
+		        callback(null, 2);     
+		    }     
+		},function(err, results) {     
+		    console.log(results);     
+		});  
+		afterCb = commonHtmlCb(req,res);
+		readfile('./files/signup.html', afterCb);
+	},
+	/*
+	 * 异步流程控制
+	 * 并行无关联
+	 * 多个函数并行执行，最后汇总结果,如果某一个流程出错就退出  
+	 */
+	aysncParallel : (req,res) => {
+		let i = j = 0,timer1 = null,time2 = null;
+		async.parallel({     
+		    one: function(callback){
+		    	timer1 = setInterval(function(){
+		    		console.log(i);i++;
+		    		if (i == 3){
+		    			clearInterval(timer1)
+		    		}
+		    	},1000)
+		        callback(null, 1);     
+		    },     
+		    two: function(callback){     
+		    	timer2 = setInterval(function(){
+		    		console.log(j);j++;
+		    		if (j == 3){
+		    			clearInterval(timer2)
+		    		}
+		    	},1000)
+		        callback(null, 2);     
+		    }     
+		},function(err, results) {     
+		    console.log(results);     
+		});  
+		afterCb = commonHtmlCb(req,res);
+		readfile('./files/signup.html', afterCb);
+	},
+	/*
+	 * 异步流程控制
+	 * 并行无关联
+	 * 每一步执行时需要由上一步执行的结果当做参数.所以每一步必须串行等待  
+	 * 任意一个方法出错，不往下执行
+	 */
+	aysncWaterfall : (req,res) => {
+		let i = j = 0,timer1 = null,time2 = null;
+		//数组形式传入
+		async.waterfall([
+		    function(callback){
+		    	timer1 = setInterval(function(){
+		    		console.log(i);i++;
+		    		if (i == 3){
+		    			clearInterval(timer1)
+		    		}
+		    	},1000)
+		        callback(null, 1);     
+		    },
+		    /*
+		     * preValue 为上一个执行方法的结果
+		     */
+		    function(preValue,callback){ 
+		    	timer2 = setInterval(function(){
+		    		console.log(j);j++;
+		    		if (j == 3){
+		    			clearInterval(timer2)
+		    		}
+		    	},1000)
+		        callback(null, preValue + '2');     
+		    }     
+		],function(err, results) {     
+		    console.log(results);     
+		});  
+		afterCb = commonHtmlCb(req,res);
+		readfile('./files/signup.html', afterCb);
+	},
+	
 }
 
 module.exports = config

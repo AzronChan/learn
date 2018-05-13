@@ -4,12 +4,10 @@
  */
 var http = require('http'),
 	url = require('url'),
-	routerConfig = require('./models/router-readfile-config.js');
+	routerConfig = require('./models/router-config.js');
 
 function routerRead(){
 	http.createServer(function(req, res) {
-		
-		
 		if(req.url !== "/favicon.ico") { //清除第2此访问 
 			var pathName = url.parse(req.url).pathname.replace(/\//,'');
 			if (routerConfig[pathName]){
