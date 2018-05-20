@@ -21,6 +21,33 @@ var util = {
 		}
 		return o;
 	},
+	/*
+	 * 是否空数组
+	 */
+	isEmptyObject : function(obj){
+		for (var i in obj){
+			return true;
+		}
+		return false;
+	},
+	/*
+	 * 是否为数组
+	 * 非ES6
+	 * ES6使用isArray()
+	 */
+	isArray : function(arr){
+		return Object.prototype.toString.call(arr)=='[object Array]';
+	},
+	/*
+	 * 数组去重 
+	 */
+	unique : function unique(arr){
+		var _arr = [];
+		for (var i = 0; i < arr.length; i++) {
+			(_arr.indexOf(arr[i]) == -1) && _arr.push(arr[i]);
+		}
+		return _arr;
+	},
 	/**
 	 * 冒泡算法
 	 * @id bubbleSort

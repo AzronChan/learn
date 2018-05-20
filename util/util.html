@@ -11,6 +11,13 @@
 			util.Cookie.write('czl',"aa=2")
 			var a = util.Cookie.read('czl','aa',true)
 			console.log(a)
+			
+			var arr = [1,2,3,4,1,41,'1'];
+			var b = util.unique(arr);
+			console.log(b)
+			
+			console.log(util.isEmptyObject({}))
+			console.log(util.isArray(''))
 		</script>
 	</body>
 </html>
