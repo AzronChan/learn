@@ -10,6 +10,10 @@ app.all('/select',function(req,res){
 	console.log('1111')
 })
 
+app.get('/index',function(req,res){
+	res.sendfile('./view/index.html')
+})
+
 /*
  * app 中间件执行顺序
  */

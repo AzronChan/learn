@@ -12,6 +12,10 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
+/*
+ * process 对象是一个全局变量，它提供当前 Node.js 进程的有关信息，以及控制当前 Node.js 进程。 因为是全局变量，所以无需使用 require()
+ * process.env属性返回一个包含用户环境信息的对象
+ */
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
