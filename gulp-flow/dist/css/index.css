@@ -1,2 +1,2 @@
-.aa{-webkit-animation:toLeft .25s 1;animation:toLeft .25s 1;width:100px;height:200px;background:#333}@-webkit-keyframes toLeft{100%{-webkit-transform:translateX(100px);transform:translateX(100px)}}@keyframes toLeft{100%{-webkit-transform:translateX(100px);transform:translateX(100px)}}
+.aa{-webkit-animation:toLeft .25s 1;animation:toLeft .25s 1;width:100px;height:200px;background:#333}.bb{width:100%;height:100%}@-webkit-keyframes toLeft{100%{-webkit-transform:translateX(100px);transform:translateX(100px)}}@keyframes toLeft{100%{-webkit-transform:translateX(100px);transform:translateX(100px)}}
 /*# sourceMappingURL=index.css.map */

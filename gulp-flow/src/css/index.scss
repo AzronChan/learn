@@ -7,6 +7,11 @@
     background: #333;
 }
 
+.bb {
+   width: 100%;
+   height: 100%;  
+}
+
 @keyframes toLeft {
     100% {
         transform: translateX(100px);
