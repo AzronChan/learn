@@ -201,7 +201,7 @@ gulp.task('spriteforcss',function(){
 
 gulp.task('release',function(cb){
 	release = true;
-	gulpSequence('flow-scss','flow-js','flow-images','flow-fileinclude','rev',cb)
+	gulpSequence('flow-scss','flow-js','flow-images','flow-fileinclude','rev','revcss',cb)
 })
 
 gulp.task('default', ['flow-scss','flow-js','flow-images','flow-fileinclude'])
