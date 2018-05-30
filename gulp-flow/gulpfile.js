@@ -169,6 +169,12 @@ gulp.task('rev', function() {
     .pipe(gulp.dest('./dist/')); //- 替换后的文件输出的目录
 });
 
+gulp.task('revcss', function() {
+  gulp.src(['./dist/images/rev-*.json', './dist/css/*.css'])
+    .pipe(revCollector()) //- 执行文件内css名的替换
+    .pipe(gulp.dest('./dist/css/')); //- 替换后的文件输出的目录
+});
+
 gulp.task('watch',function(){
 	gulp.watch('./src/css/*.scss',['flow-css']);
 	gulp.watch('./src/images/*',['flow-images']);
