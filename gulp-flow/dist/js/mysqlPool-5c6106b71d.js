@@ -1,0 +1,2 @@
+var OptPool=require("./models/mysqlConfig.js"),optPool=new OptPool,pool=optPool.getPool();pool.getConnection(function(o,n){n.query("insert into user (uname,pwd) values(?,?)",["eee","eee111"],function(o,e){o?console.log("insert err:",o.message):console.log("insert success")}),n.query("SELECT * from user",function(o,e){if(o)console.log("[query] - :"+o);else{for(var l=0;l<e.length;l++)console.log(e[l].pwd);n.release()}})});
+//# sourceMappingURL=mysqlPool.js.map
