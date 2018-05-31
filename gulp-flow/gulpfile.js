@@ -178,12 +178,19 @@ gulp.task('rev', function () {
         .pipe(gulp.dest('./dist/')); //- 替换后的文件输出的目录
 });
 
+
 gulp.task('watch', function () {
     gulp.watch('./src/css/*.scss', ['flow-css']);
     gulp.watch('./src/images/*', ['flow-images']);
     gulp.watch('./src/js/*.js', ['flow-js']);
     gulp.watch('./src/**.html', ['flow-fileinclude']);
 })
+
+gulp.task('revcss', function() {
+  gulp.src(['./dist/images/rev-*.json', './dist/css/*.css'])
+    .pipe(revCollector()) //- 执行文件内css名的替换
+    .pipe(gulp.dest('./dist/css/')); //- 替换后的文件输出的目录
+});
 
 /*
  * 根据CSS合成雪碧图
@@ -201,10 +208,9 @@ gulp.task('spriteforcss', function () {
 })
 
 
-gulp.task('release', function (cb) {
-    release = true;
-    gulpSequence('flow-css', 'flow-js', 'flow-images', 'flow-fileinclude', 'rev', cb)
+gulp.task('release',function(cb){
+	release = true;
+	gulpSequence('flow-scss','flow-js','flow-images','flow-fileinclude','rev','revcss',cb)
 })
 
-
-gulp.task('default', ['flow-css', 'flow-js', 'flow-images', 'flow-fileinclude', 'rev'])
+gulp.task('default', ['flow-scss','flow-js','flow-images','flow-fileinclude'])
