@@ -49,7 +49,7 @@ gulp.task('cssfix', function () {
 
 //工具-生成雪碧图-pc
 gulp.task('sprite', function () {
-    gulp.src(['src/images/*.png'])
+    gulp.src(['src/images/icon_*.png','src/images/bg_*.png'])
         .pipe(spritesmith({
             imgName: '../../src/images/sprite.png', //保存合并后图片的地址
             cssName: '../../src/css/sprite.scss', //保存合并后对于css样式的地址
@@ -58,7 +58,7 @@ gulp.task('sprite', function () {
             cssTemplate: function (data) {
                 var arr = [];
                 data.sprites.forEach(function (data) {
-                    arr.push(".icon_" + data.name +
+                    arr.push(data.name +
                         "{" +
                         "background-image: url('" + data.escaped_image + "');" +
                         "background-position: " + data.px.offset_x + " " + data.px.offset_y +
@@ -118,7 +118,7 @@ gulp.task('h5-sprite', function () {
 
 //工作流
 //sass
-gulp.task('flow-css', function () {
+gulp.task('flow-scss', function () {
     return gulp.src('./src/css/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
@@ -180,7 +180,7 @@ gulp.task('rev', function () {
 
 
 gulp.task('watch', function () {
-    gulp.watch('./src/css/*.scss', ['flow-css']);
+    gulp.watch('./src/css/*.scss', ['flow-scss']);
     gulp.watch('./src/images/*', ['flow-images']);
     gulp.watch('./src/js/*.js', ['flow-js']);
     gulp.watch('./src/**.html', ['flow-fileinclude']);

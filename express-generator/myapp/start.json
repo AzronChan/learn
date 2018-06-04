@@ -2,7 +2,6 @@
     "name": "demi",  //项目名称
     "script": "./bin/www", //要执行的脚本
     "cwd":"./", //项目所在目录
-    "instances" : "max",	//num 内核开到最大
     "watch":[  //添加受监控的文件，以便自动更新
         "models",
         "routes"
