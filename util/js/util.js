@@ -149,9 +149,13 @@ var util = {
                 }
             }
             if (key) {
-				if(!isJSON)
-	                return cookieValue.split('=')[1];
-				else
+				if(!isJSON){
+	                var o = {},arr = cookieValue.split('&');
+	                for (var i in arr){
+	                	o[arr[i].split('=')[0]] = arr[i].split('=')[1];
+	                }
+	                return o[key]
+				} else
 					return JSON.parse('{' + cookieValue.replace(/\=/,':').replace(/([a-z0-9]+)/g,function(){return '"' + arguments[0] + '"'}) + '}');
             }
             return cookieValue;
@@ -164,5 +168,14 @@ var util = {
             document.cookie = cookie;
             
         }
-    }
+    },
+    Offset : function(node) {
+    	//getBoundingClientRect.top 距离浏览器顶部高度
+		var docElem = document.documentElement;
+	    return {
+	    	top : node.getBoundingClientRect().top + ( window.pageYOffset || docElem.scrollTop ) - ( docElem.clientTop  || 0 ),
+            left: node.getBoundingClientRect().left + ( window.pageXOffset || docElem.scrollLeft ) - ( docElem.clientLeft || 0 )  
+	    };
+	    //减去docElem.clientTop 为兼容IE
+	}
 }
