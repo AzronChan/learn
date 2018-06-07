@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<audio src="http://fs.w.kugou.com/201806080053/14e456c9f4e4f6f13aea2d475562eaa5/G134/M0A/0A/11/xg0DAFsRFJSAQe1YAD2UNz7hDEs163.mp3" id="myAudio" preload="auto" controls='true'></audio>
+		<a href="javascript:;" id='playStatus'>暂停</a>
+		<a href="javascript:;" id="next">下一首</a>
+		
+		<script>
+			var audio = document.getElementById('myAudio'),
+				playStatus = document.getElementById('playStatus'),
+				next = document.getElementById('next');
+			audio.play();
+			
+			audio.onerror = function(){
+				console.log('error')	
+			}
+			
+			next.onclick = function(){
+				audio.src = 'audio/艾福杰尼 - KORLA.mp3';
+				audio.play();
+			}
+			playStatus.onclick = function(){
+				
+				if (this.innerHTML == '暂停'){
+					this.innerHTML = '播放';
+					audio.pause();
+				} else { 
+					this.innerHTML = '暂停';
+					audio.play();
+				}
+			}
+		</script>
+	</body>
+</html>
