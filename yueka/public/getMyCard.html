@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="card_list">
+			
+		</div>
+		<script type="text/html" id='list'>
+			{each data as val i}
+			   	<li>
+					<p>名称：{val.title}</p>
+					<p>描述：{val.depict}</p>
+					<p>价格：{val.price}</p>
+					<p>有效期：{val.startTime} - {val.entTime}</p>
+					<p>状态：{if val.useStatus == 0} 已使用 {else} 未使用 {/if}</p>
+					{if val.useStatus != 0}<p><a href="javascript:;">使用</a></p>{/if}
+				</li>
+			{/each}
+		</script>
+		<script type="text/javascript" src="js/jquery-1.11.2.min.js" ></script>
+		<script src="js/template-min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		$.ajax({
+			type:"get",
+			url:"http://localhost:3000/getMyCard?username=czl",
+			async:true,
+			success : function(res){
+				if (res.status == 1){
+					var cards = res.data;
+					console.log(cards)
+					document.getElementById("card_list").innerHTML += template.render('list', {
+						data : cards
+		            });
+				}
+			}
+		});
+		</script>
+	</body>
+</html>

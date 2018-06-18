@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		
+		<script type="text/javascript" src="js/jquery-1.11.2.min.js" ></script>
+		<script type="text/javascript">
+		$.ajax({
+			type:"get",
+			url:"http://localhost:3000/creatMyCard",
+			data : {
+				username: 'czl',
+				card : {
+					title : '卡1',
+					depict : '这是一张卡',
+					price : '1.0',
+					startTime :new Date().getTime(),
+					entTime : new Date().getTime(),
+					date : new Date().getTime()
+				},
+				
+			},
+			async:true,
+			success : function(res){
+				console.log(res)
+			}
+		});
+		</script>
+	</body>
+</html>

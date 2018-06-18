@@ -3,36 +3,240 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.audio {
+				position: relative;
+				width: 200px;
+				height: 10px;
+				background: #000;
+			}
+			.process {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 0px;
+				height: 10px;
+				background: #ccc;
+			}
+			.dot {
+				position: relative;
+				z-index: 2;
+				width: 10px;
+				height: 10px;
+				background: blue;
+				cursor: pointer;
+			}
+			
+			.bar {
+				position: relative;
+				width: 370px;
+				height: 5px;
+				margin: 100px auto;
+				cursor: pointer;
+				background: rgba(0,0,0,.5);
+			}
+			.progress-bar {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 5px;
+			}
+			.progress-middle {
+				width: 370px;
+				height: 5px;
+			}
+			.progress {
+				display: block;
+				background: brown;
+				height: 5px;
+			}
+			.drag-playhead {
+				position: absolute;
+				top: 0px;
+				left: 0;
+				width: 370px;
+				height: 5px;
+			}
+			.playbar-playhead {
+				position: relative;
+				top: -7px;
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				border-radius:50%;
+				background: red;
+			}
+		</style>
+		<script src="js/jquery-1.11.2.min.js" type="text/javascript" charset="utf-8"></script>
 	</head>
 	<body>
-		<audio src="http://fs.w.kugou.com/201806080053/14e456c9f4e4f6f13aea2d475562eaa5/G134/M0A/0A/11/xg0DAFsRFJSAQe1YAD2UNz7hDEs163.mp3" id="myAudio" preload="auto" controls='true'></audio>
+		<audio src="http://fs.w.kugou.com/201806090045/7d5accda8187ab9e89700fca4b935189/G126/M0B/10/0F/vg0DAFsWluyAGWwLAEgTTze-uSM861.mp3" id="myAudio" preload="auto" controls='true'></audio>
 		<a href="javascript:;" id='playStatus'>暂停</a>
 		<a href="javascript:;" id="next">下一首</a>
 		
+		
+		<div class="bar" id="bar">
+            <!-- 播放进度条（自适应） -->
+            <div class="progress-bar" id="progress_bar">
+                <div class="progress-middle" id="progress_middle">
+                    <span class="progress barProgress" id="progress"></span>
+                </div>
+            </div>
+            <!-- 播放定位头（自适应） -->
+            <div class="drag-playhead" id="drag_playhead">
+                <span class="icon playbar-playhead" id="playhead"></span>
+            </div>
+        </div>
+        
 		<script>
-			var audio = document.getElementById('myAudio'),
+			var myAudio = document.getElementById('myAudio'),
 				playStatus = document.getElementById('playStatus'),
-				next = document.getElementById('next');
-			audio.play();
+				next = document.getElementById('next'),
+				$dot = $('.dot');
 			
-			audio.onerror = function(){
+			myAudio.onerror = function(){
 				console.log('error')	
 			}
 			
 			next.onclick = function(){
-				audio.src = 'audio/艾福杰尼 - KORLA.mp3';
-				audio.play();
+				myAudio.src = 'myAudio/艾福杰尼 - KORLA.mp3';
+				myAudio.play();
 			}
 			playStatus.onclick = function(){
 				
 				if (this.innerHTML == '暂停'){
 					this.innerHTML = '播放';
-					audio.pause();
+					myAudio.pause();
 				} else { 
 					this.innerHTML = '暂停';
-					audio.play();
+					myAudio.play();
 				}
 			}
+			
+			
+			
+			var player = {
+				audioID : null,
+				$playhead : $('.playhead'),
+				$progress : $('.progress'),
+				beginClientX: 0, //用于水平拖动播放进度条时，初始保存鼠标X坐标值
+				begingPlayHeadX: 0, //用于水平拖动播放进度条时，初始保存播放头X坐标值
+				isPlayDrop: false, //判断当前用户是否拖动播放进度条
+				isAudioStop: false,
+				init : function(){
+					var _t = this;
+					//初始化requestAnimationFrame API
+			        try {
+			            var lastTime = 0;
+			            var vendors = ['webkit', 'moz', 'ms', 'o'];
+			            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+			                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+			                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+			            }
+			
+			            if (!window.requestAnimationFrame)
+			                window.requestAnimationFrame = function(callback, element) {
+			                    var currTime = new Date().getTime();
+			                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+			                    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+			                    lastTime = currTime + timeToCall;
+			                    return id;
+			                };
+			
+			            if (!window.cancelAnimationFrame)
+			
+			                window.cancelAnimationFrame = function(id) {
+			                clearTimeout(id);
+			            };
+			
+			        } catch (ex) {
+			
+			        }
+					window.audioPlayerAnimloop = function() {
+						player.audioRender();
+						_t.audioID = requestAnimationFrame(audioPlayerAnimloop)
+					}
+					
+					
+					myAudio.addEventListener("play", function() {
+			            if (_t.isAudioStop) {
+			                _t.audioStart();
+			            }
+			        });
+				},
+				audioRender : function(){
+					var _t = this;
+					if (myAudio.readyState > 0) {
+			            if (!player.isPlayDrop) {
+			                var pre = myAudio.currentTime / myAudio.duration;
+			                pre = pre.toFixed(4);
+			                _t.positionPlay(pre, Math.floor(myAudio.currentTime * 1000))
+			            }
+			        }
+				},
+				/*设置播放进度条值 百分比,如：0.2456*/
+			    setProgress: function(pro) {
+			        var _t = this;
+			        pro = pro * 100;
+			        _t.$progress.css("width", "" + pro + "%");
+			        _t.$playhead.css("margin-left", "" + pro + "%");
+			    },
+				/*
+				 * 设置播放程度
+				 */
+				positionPlay : function(pre){
+					var _t = this;
+					
+					_t.setProgress(pre);
+				},
+				/*
+				 * 播放开始
+				 */
+				audioStart : function(){
+					var _t = this;
+					if (myAudio == null || myAudio.src == "") {
+			            return;
+			        }
+			        myAudio.play();
+			       _t.audioID = requestAnimationFrame(audioPlayerAnimloop);
+				}
+			}
+			player.init();
+			player.audioStart();
+			
+			//clientX 页面横坐标
+//			$dot.mousedown(function(e){
+//				 e.stopPropagation();
+//	            player.isPlayDrop = true;
+//	            player.beginClientX = e.clientX;
+//	            var str = $dot.css("margin-left");
+//	            player.begingPlayHeadX = Number(str.replace("px", ""));
+//	            console.log(player.begingPlayHeadX)
+//			})
+//			$(document).on("mousemove", function(e) {
+//	            if (player.isPlayDrop) {
+//	                if (player.begingPlayHeadX + (e.clientX - player.beginClientX) <= 0) {
+//	                	//拖拽超过播放条左边
+//	                    $progress.css("width", "0");
+//	                    $playhead.css("margin-left", "0");
+//	                } else if (player.begingPlayHeadX + (e.clientX - player.beginClientX) >= $drag_playhead.width()) {
+//	                	//拖拽超过播放条右边
+//	                    $progress.css("width", "100%");
+//	                    $playhead.css("margin-left", "100%");
+//	                } else {
+//	                	//拖拽在播放条内
+//	                    var pre = (player.begingPlayHeadX + (e.clientX - player.beginClientX)) / $drag_playhead.width();
+//	                    pre = pre.toFixed(4);
+//	                    _this.setProgress(pre);
+//	
+//	                }
+//	            }
+//	        });
 		</script>
 	</body>
 </html>
