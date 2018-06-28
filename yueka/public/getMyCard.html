@@ -22,27 +22,67 @@
 					<p>价格：{val.price}</p>
 					<p>有效期：{val.startTime} - {val.entTime}</p>
 					<p>状态：{if val.useStatus == 0} 已使用 {else} 未使用 {/if}</p>
-					{if val.useStatus != 0}<p><a href="javascript:;">使用</a></p>{/if}
+					<p>
+						<a href="javascript:;" data-index="{i}">使用</a>
+						{if val.useStatus == 0}
+						<a href="javascript:;" data-type='give' data-index="{i}">赠送</a>
+						{/if}
+					</p>
+					
 				</li>
 			{/each}
 		</script>
 		<script type="text/javascript" src="js/jquery-1.11.2.min.js" ></script>
 		<script src="js/template-min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-		$.ajax({
-			type:"get",
-			url:"http://localhost:3000/getMyCard?username=czl",
-			async:true,
-			success : function(res){
-				if (res.status == 1){
-					var cards = res.data;
-					console.log(cards)
-					document.getElementById("card_list").innerHTML += template.render('list', {
-						data : cards
-		            });
+			
+			
+			var getMyCard = {
+				cards : [],
+				bindUi:function(){
+					var _t = this,
+						$cardList = $('#card_list');
+					$cardList.on('click',function(e){
+						var el = e.target || e.srcElement;
+						var index = el.getAttribute('data-index'),
+							type = el.getAttribute('data-type');
+						if (type != 'give'){
+							return;
+						}
+						$.ajax({
+							type:"get",
+							url:"http://localhost:3000/giveCard?username=czl&cardid=" + _t.cards[index].id + '&receiver=lsj',
+							async:true,
+							success : function(res){
+								if (res.status == 1){
+									
+								}
+							}
+						});
+					})
+				},
+				init : function(){
+					var _t = this;
+					this.bindUi();
+					
+					$.ajax({
+						type:"get",
+						url:"http://localhost:3000/getMyCard?username=czl",
+						async:true,
+						success : function(res){
+							if (res.status == 1){
+								var cards = res.data;
+								_t.cards = cards;
+								console.log(cards)
+								document.getElementById("card_list").innerHTML += template.render('list', {
+									data : cards
+					            });
+							}
+						}
+					});
 				}
 			}
-		});
+			getMyCard.init();
 		</script>
 	</body>
 </html>

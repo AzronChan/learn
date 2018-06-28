@@ -9,11 +9,19 @@ module.exports = {
 		errorMsg : '用户不存在'
 	},
 	creatCardErr : {
-		errorCode : 201,
+		errorCode : 20001,
 		errorMsg : '创建失败'
 	},
 	creatCardLimit : {
-		errorCode : 202,
+		errorCode : 20002,
 		errorMsg : '卡片数量超出限制'
+	},
+	deleteCardErr : {
+		errorCode : 30001,
+		errorMsg : '删除卡片失败'
+	},
+	cardGived : {
+		errorCode : 40001,
+		errorMsg : '卡片已赠送'
 	}
 }
