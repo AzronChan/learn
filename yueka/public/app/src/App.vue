@@ -1,25 +1,58 @@
 <template>
   <div id="app">
-		<login></login>
+  	<nav-bar/>
+		<!--<login/>-->
+		<!--<sign-up/>-->
+		<div class="main">
+				<router-view></router-view>
+		</div>
+		<tab-bar/>
   </div>
 </template>
 
 <script>
+import NavBar from './components/NavBar.vue';
+	
+import Login from './components/Login.vue';
+
+import signUp from './components/SignUp.vue';
+
+import TabBar from './components/TabBar.vue';
+
+
 (function() {
 	var html = document.querySelector("html"),
 		rem = html.offsetWidth / 7.5;
 	html.style.fontSize = rem + "px";
 })();
-import login from './components/login.vue'
+
+Date.prototype.format = function(format) {
+    var o = {
+            "M+": this.getMonth() + 1, //month
+            "d+": this.getDate(), //day
+            "h+": this.getHours(), //hour
+            "m+": this.getMinutes(), //minute
+            "s+": this.getSeconds(), //second
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+            "S": this.getMilliseconds() //millisecond
+        };
+    if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(format))
+          format = format.replace(RegExp.$1,
+            RegExp.$1.length == 1 ? o[k] :
+            ("00" + o[k]).substr(("" + o[k]).length));
+        return format;
+}
 
 export default {
   name: 'app',
-  components: { login }
+  components: { Login,signUp,NavBar,TabBar}
 }
 </script>
 
 <style lang="scss">
-@import url("assets/css/base.css");
+@import url("assets/css/base.scss");
 body,html {
 	width: 100%;
   height: 100%;
@@ -33,5 +66,17 @@ body,html {
   color: #2c3e50;
   width: 100%;
   height: 100%;
+}
+
+.main {
+	height: calc(100% - 46px - 1.4rem);
+	padding: 46px 0 1.4rem;
+}
+
+.dialog_content {
+	font-family: Arial, Helvetica, "STHeiti STXihei", "Microsoft YaHei", Tohoma, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-size: .32rem;
 }
 </style>
