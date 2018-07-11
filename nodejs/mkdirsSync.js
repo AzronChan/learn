@@ -20,12 +20,14 @@ function mkdirs(dirname, callback) {
 	});
 }
 // 递归创建目录 同步方法
-function mkdirsSync(dirname) {
-	if(fs.existsSync(dirname)) {
+function checkMadeDir(dirname) {
+	if (!dirname) return;
+	let _dirname = path.dirname(dirname);
+	if(fs.existsSync(_dirname)) {
 		return true;
 	} else {
-		if(mkdirsSync(path.dirname(dirname))) {
-			fs.mkdirSync(dirname);
+		if(checkMadeDir(_dirname)) {
+			fs.mkdirSync(_dirname);
 			return true;
 		}
 	}
@@ -37,4 +39,5 @@ function mkdirsSync(dirname) {
 
 //mkdirsSync('hello/a/b/c');
 
-mkdirsSync('mkdir/a/d/b')
+checkMadeDir('mkdir/a/d/e/aa.js')
+//console.log(fs.existsSync(path.dirname('mkdir/a/d/b/aa.js')))
