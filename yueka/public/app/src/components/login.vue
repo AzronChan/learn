@@ -2,8 +2,8 @@
 	<div class="login">
 		<div class="login_box">
 			<h3 class="login_title">登 录</h3>
-			<input type="text" placeholder="请输入用户名" value=""/>
-			<input type="text" placeholder="请输入密码" value=""  />
+			<input type="text" placeholder="请输入用户名" value="" />
+			<input type="text" placeholder="请输入密码" value="" />
 			<van-button type="primary" class='login_btn' size="large" block @click='loginFn()'  :loading="loginBtnShowLoad"> 登 录 </van-button>
 			<p class="sign_up_link">还没有账号？<router-link to='/signup'>立即注册</router-link></p>
 		</div>

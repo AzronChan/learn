@@ -2,30 +2,35 @@
 	<div class="card_manage">
 		<van-tabs style="position:static">
 		  <van-tab v-for="item in tabs" :title="item.title" swipeable>
-		  		<ul v-if="item.data.length != 0" :class="['card_list']" >
-		  			<li v-for="(val,index) in item.data" :class="[val.receiver != '' ? 'received_card' : '' , val.useStatus == 1 ? 'used_card_list' : '']" >
-		  				<h3>{{val.title}}</h3>
-		  				<p class="depict"><span>描述：</span>{{val.depict}}</p>
-		  				<p><span class="left_title">有效期限：</span>{{val.startTime}} 至 {{val.endTime}}</p>
-		  				<p v-if="val.giverID != userid">
-		  					{{val.giver}} 赠送于 {{val.giveTime}}
-		  				</p>
-		  				<p v-else-if="val.receiver != ''">
-		  					已赠送给 {{val.receiver}}
-		  				</p>
-		  				<div class="handle_btn" v-if="val.giverID == userid && val.receiver == ''">
-		  					<span @click='deleteCard(index)'>删除</span><span @click='giveCardShow(index)'>赠送给好友</span>
-		  				</div>
-		  				<div class="handle_btn" v-else-if="item.title == '已使用卡片'">
-		  					<span @click='deleteCard(index)'>删除</span>
-		  				</div>
-		  				<div class="handle_btn" v-else-if="val.receiver != ''">
-		  				</div>
-		  				<div class="handle_btn" v-else>
-		  					<span @click='deleteCard(index)'>删除</span><span @click="cardUse(index)">使用</span>
-		  				</div>
-		  			</li>
-		  		</ul>
+		  		<div class="card_list" v-if="item.data.length != 0">
+			  		<ul>
+			  			<li v-for="(val,index) in item.data" :class="[val.receiver != '' ? 'received_card' : '' , val.useStatus == 1 ? 'used_card_list' : '']" >
+			  				<h3>{{val.title}}</h3>
+			  				<p class="depict"><span>描述：</span>{{val.depict}}</p>
+			  				<p><span class="left_title">有效期限：</span>{{val.startTime}} 至 {{val.endTime}}</p>
+			  				<p v-if="val.giverID != userid">
+			  					{{val.giver}} 赠送于 {{val.giveTime}}
+			  				</p>
+			  				<p v-else-if="val.receiver != ''">
+			  					已赠送给 {{val.receiver}}
+			  				</p>
+			  				<div class="handle_btn" v-if="val.giverID == userid && val.receiver == ''">
+			  					<span @click='deleteCard(index)'>删除</span><span @click='giveCardShow(index)'>赠送给好友</span>
+			  				</div>
+			  				<div class="handle_btn" v-else-if="item.title == '已使用卡片'">
+			  					<span @click='deleteCard(index)'>删除</span>
+			  				</div>
+			  				<div class="handle_btn" v-else-if="val.receiver != ''">
+			  				</div>
+			  				<div class="handle_btn" v-else>
+			  					<span @click='deleteCard(index)'>删除</span><span @click="cardUse(index)">使用</span>
+			  				</div>
+			  			</li>
+			  		</ul>
+			  		<div class="card_list_add">
+		  				<van-icon name="add" class="add_card_icon" @click="routerLink('createcard')"/>
+		  			</div>
+		  		</div>
 		  		<div class="add_card" v-else-if="item.title == '已使用卡片'">
 		  			<p>你还没有使用过卡片</p>
 		  		</div>
@@ -35,17 +40,19 @@
 		  		</div>
 		  </van-tab>
 		</van-tabs>
-			<van-dialog
+		<van-dialog
 			  	v-model="giveCardDialogShow"
 			  	show-cancel-button
 			  	title="赠送"
 			  	@confirm='giveCard()'
+			  	:before-close='checkFriName'
 			>
 			<div class="van-hairline--top" style="height: 1px;margin: .3rem 0 .1rem"></div>
 			<van-field
 			  	v-model="receiver"
 			    label="赠送给："
 			    placeholder="请输入接收者用户名"
+			   
 			/>
 		</van-dialog>
 	</div>
@@ -171,6 +178,9 @@
 				this.giveCardDialogShow = true;
 				this.giveCardIndex = index;
 			},
+			/**
+			 * 赠送卡片
+			 */
 			giveCard(){
 				let _t = this,
 					toast = Toast.loading({
@@ -191,6 +201,12 @@
 					})
 				},300)
 			},
+			/**
+			 * 重置卡片显示UI
+			 * @param {obj}
+			 * opt.type 操作类型
+			 * opt.index 操作index
+			 */
 			resetCardList(obj){
 				console.log(obj)
 				let _t = this,
@@ -209,6 +225,12 @@
 					data = data.splice(obj.index-1,1);
 					_t.tabs[0].data = data;
 				}
+			},
+			checkFriName (action,done){
+//				done(false);
+				setTimeout(function(){
+					done();
+				},2000)
 			}
 		}
 	}
@@ -231,9 +253,6 @@
 			
 			font-size: .28rem;
 		    line-height: 1rem;
-		}
-		.add_card_icon {
-			color: green; 
 		}
 	}
 	.card_list {
@@ -274,7 +293,14 @@
 				background:#c33f50;
 			}
 		}
+		.card_list_add {
+			text-align: center;
+			
+		}
 		
+	}
+	.add_card_icon {
+		color: #50525f;
 	}
 	
 </style>

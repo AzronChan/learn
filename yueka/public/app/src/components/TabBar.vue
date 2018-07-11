@@ -21,7 +21,7 @@
 						tabName : '卡片管理'
 					},
 					{
-						routerType : 'option',
+						routerType : 'options',
 						iconName : 'setting',
 						tabName : '选项'
 					}

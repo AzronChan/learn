@@ -39,7 +39,6 @@
 				datetime: '', //
 				minDate: new Date(),
 				currentDate: new Date()
-
 			}
 		},
 
