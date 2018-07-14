@@ -42,12 +42,12 @@ function errHandle(res,obj){
 
 
 /**
- * @description 卡片ID生成器
+ * @description ID生成器
  * @param {String} sequenceName 自增器名称
  */
 function getNextSequenceValue(sequenceName,callback){
    	var sequenceDocument = cardIdCounter.findOneAndUpdate({
-   		_id : 'cardsid'
+   		_id : sequenceName
    	},{$inc : { sequence_value : 1 } },function(err,doc){
    		if (doc){
    			callback && callback(doc.sequence_value);
@@ -58,7 +58,7 @@ function getNextSequenceValue(sequenceName,callback){
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-		res.render('login');
+	res.render('login');
 });
 
 
@@ -66,7 +66,7 @@ router.get('/', function(req, res, next) {
 /*
  * 登录
  */
-router.get('/signin',function(req,res,next){
+router.get('/api/v1/signin',function(req,res,next){
 	console.log(req.query,typeof req.query);
 	if (!util.isEmptyObject(req.query)){
 		res.send(JSON.stringify({
@@ -76,21 +76,38 @@ router.get('/signin',function(req,res,next){
 			errormsg : '参数错误'
 		}))
 	} else {
-		res.send(JSON.stringify({
-				status : 1,
-				data: {},
-				errorcode : 0,
-				errormsg : '登录成功'
-		}))
+		let data = req.query;
+		user.findOne({username : data.username},function(err,doc){
+			if (err){
+				res.send('链接异常')
+			}
+			if (doc.password == data.password){
+				res.send(JSON.stringify({
+					status : 1,
+					data: {
+						username : doc.username,
+						age : doc.age,
+						location : doc.location
+					},
+					errorcode : 0,
+					errormsg : '登录成功'
+				}))
+			} else {
+				return errHandle(res,{
+					errorName : 'loginPswErr'
+				})
+			}
+		})
+		
 	}
 })
 
 /*
  * 注册
  */
-router.get('/signup',function(req,res,next){
+router.get('/api/v1/signup',function(req,res,next){
 	let data = req.query;
-	if (!data.username || !data.password || !data.age || !data.address || !data.tel){
+	if (!data.username || !data.password || !data.age || !data.location || !data.tel){
 		res.send({
 			status : 0,
 			data: {},
@@ -99,27 +116,39 @@ router.get('/signup',function(req,res,next){
 		})
 		return;
 	}
-	user.findOne({username : data.username},function(err,doc){
-		console.log(err,doc);
-		if (doc){
-			res.send({
-				status : 0,
-				data: {},
-				errorcode : 0,
-				errormsg : '用户名已被注册'
-			})
-		} else {
-			// 保存到数据库
-			console.log(data)
-            user.create(data, function (err, doc) {
-               	res.send({
-					status : 1,
+	getNextSequenceValue('userid',(data1) => {
+		user.findOne({username : data.username},function(err,doc){
+//			console.log(err,doc);
+			if (err){
+				res.send('链接异常')
+			}
+			if (doc){
+				res.send({
+					status : 0,
 					data: {},
 					errorcode : 0,
-					errormsg : ''
+					errormsg : '用户名已被注册'
 				})
-            })
-		}
+			} else {
+				// 保存到数据库
+				data['userid'] = data1;
+				console.log(data);
+	            user.create(data, function (err, doc) {
+	               	res.send({
+						status : 1,
+						data: {
+							id : data1,
+							username : doc.username,
+							age : doc.age,
+							location : doc.location,
+							tel : doc.tel
+						},
+						errorcode : 0,
+						errormsg : ''
+					})
+	            })
+			}
+		})
 	})
 })
 

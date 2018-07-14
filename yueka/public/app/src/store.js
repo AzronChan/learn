@@ -8,7 +8,7 @@ export default new Vuex.Store({
 		navBarShow : false,
 		userInfo : {
 			userid : 0,
-			username : '',
+			username : 'czl',
 			location : '',
 			sign : ''
 		}

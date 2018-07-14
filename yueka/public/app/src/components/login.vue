@@ -22,10 +22,14 @@ export default {
     	loginFn () {
     		let _t = this;
     		_t.loginBtnShowLoad = true;
-    		setTimeout(function(){
-    			_t.loginBtnShowLoad = false;
-    		},2000)
+//  		this.$http({
+//  			method:'get',
+//  			url : ''
+//  		})
     	}
+  	},
+  	mounted (){
+  		
   	}
 }
 </script>

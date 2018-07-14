@@ -8,6 +8,10 @@ module.exports = {
 		errorCode : 1,
 		errorMsg : '用户不存在'
 	},
+	loginPswErr: {
+		errorCode : 10002,
+		errorMsg : '密码错误'
+	},
 	creatCardErr : {
 		errorCode : 20001,
 		errorMsg : '创建失败'
@@ -24,4 +28,5 @@ module.exports = {
 		errorCode : 40001,
 		errorMsg : '卡片已赠送'
 	}
+	
 }

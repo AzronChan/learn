@@ -73,30 +73,30 @@
 					{
 						title :'我的卡片',
 						data : [
-							{
-								title : '抱抱卡',
-								depict : '这是一大段描述',
-								startTime : '2018-07-01',
-								endTime : '2018-07-11',
-								useStatus : 0,
-								cardStatus :0,
-								giver : 'czl',
-								giverID : '123123',
-								receiver : '',
-								giveTime : '2018-07-05'
-							},
-							{
-								title : '亲亲卡',
-								depict : '这是一大段描述',
-								startTime : '2018-07-01',
-								endTime : '2018-07-11',
-								useStatus : 0,
-								cardStatus :0,
-								giver : 'czl',
-								receiver : '',
-								giverID : '1231234',
-								giveTime : '2018-07-05'
-							}
+//							{
+//								title : '抱抱卡',
+//								depict : '这是一大段描述',
+//								startTime : '2018-07-01',
+//								endTime : '2018-07-11',
+//								useStatus : 0,
+//								cardStatus :0,
+//								giver : 'czl',
+//								giverID : '123123',
+//								receiver : '',
+//								giveTime : '2018-07-05'
+//							},
+//							{
+//								title : '亲亲卡',
+//								depict : '这是一大段描述',
+//								startTime : '2018-07-01',
+//								endTime : '2018-07-11',
+//								useStatus : 0,
+//								cardStatus :0,
+//								giver : 'czl',
+//								receiver : '',
+//								giverID : '1231234',
+//								giveTime : '2018-07-05'
+//							}
 						]
 					},
 					{
@@ -105,6 +105,22 @@
 					}
 				]
 			}
+		},
+		mounted (){
+			let _t = this;
+			this.$http({
+				method : 'get',
+				url  : '/getMyCard',
+				params : {
+					username : 'czl'
+				}
+			}).then(({data}) => {
+				console.log(data)
+				if (data.status == 1){
+					console.log(data.data[0])
+					_t.tabs[0].data = data.data;
+				}
+			})
 		},
 		methods: {
 			routerLink(type){

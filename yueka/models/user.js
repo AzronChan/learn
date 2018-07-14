@@ -7,11 +7,13 @@ var userSchema = new Schema({
         type: String,
         unique: true
     },
+    userid : Number,
     password: {
         type: String
     },
     age: Number,
-    address: String,
+    location : String,
+    tel : Number,
     cards : Array,
     createAt: {
         type: Date,
