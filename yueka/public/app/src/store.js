@@ -16,6 +16,9 @@ export default new Vuex.Store({
 	mutations: {
 		navBarShow(state,payload){
 			state.navBarShow = payload
+		},
+		userInfo(state,payload) {
+			state.userInfo = payload
 		}
 	},
 	actions: {

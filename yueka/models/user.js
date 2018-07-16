@@ -14,6 +14,8 @@ var userSchema = new Schema({
     age: Number,
     location : String,
     tel : Number,
+    sex : Number,
+ 	mail : String,
     cards : Array,
     createAt: {
         type: Date,

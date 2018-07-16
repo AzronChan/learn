@@ -5,7 +5,7 @@
 
 module.exports = {
 	userNotfind : {
-		errorCode : 1,
+		errorCode : 10001,
 		errorMsg : '用户不存在'
 	},
 	loginPswErr: {

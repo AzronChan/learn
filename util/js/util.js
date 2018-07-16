@@ -72,6 +72,16 @@ var util = {
 		return _arr;
 	},
 	/**
+	 * 验证邮箱正确性
+	 * 允许前部有汉字
+	 * 汉字在正则表示为[\u4e00-\u9fa5]
+	 * @param {Object} str
+	 */
+	testMail : function (str){
+		if (str.match(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/g)) return true;
+		else return false
+	},
+	/**
 	 * 冒泡算法
 	 * @id bubbleSort
 	 * @param {Array} 需排列数组

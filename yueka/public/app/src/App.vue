@@ -1,9 +1,7 @@
 <template>
 	<div id="app">
 		<nav-bar/>
-		<!--<login/>-->
-		<!--<sign-up/>-->
-		<div :class="['main',navBarShow ? '' : 'main_pt0']">
+		<div :class="['main',navBarShow ? 'main_pt46' : '']">
 			<router-view></router-view>
 		</div>
 		<tab-bar/>
@@ -12,10 +10,6 @@
 
 <script>
 	import NavBar from './components/NavBar.vue';
-
-	import Login from './components/Login.vue';
-
-	import signUp from './components/SignUp.vue';
 
 	import TabBar from './components/TabBar.vue';
 	
@@ -55,8 +49,6 @@
 		}
 		,
 		components: {
-			Login,
-			signUp,
 			NavBar,
 			TabBar
 		},
@@ -95,11 +87,12 @@
 	}
 	
 	.main {
-		height: calc(100% - 46px - 1.4rem);
-		padding: 46px 0 1.4rem;
+		height: calc(100% - 1.4rem);
+		padding: 0px 0 1.4rem;
 		background: #f8f8f8;
-		&.main_pt0 {
-			padding-top: 0;
+		&.main_pt46 {
+			height: calc(100% - 46px - 1.4rem);
+			padding-top: 46px;
 		}
 	}
 	

@@ -2,8 +2,8 @@
 	<div class="login">
 		<div class="login_box">
 			<h3 class="login_title">登 录</h3>
-			<input type="text" placeholder="请输入用户名" value="" />
-			<input type="text" placeholder="请输入密码" value="" />
+			<input type="text" placeholder="请输入用户名" value="" v-model="username"/>
+			<input type="text" placeholder="请输入密码" value="" v-model="password"/>
 			<van-button type="primary" class='login_btn' size="large" block @click='loginFn()'  :loading="loginBtnShowLoad"> 登 录 </van-button>
 			<p class="sign_up_link">还没有账号？<router-link to='/signup'>立即注册</router-link></p>
 		</div>
@@ -11,21 +11,58 @@
 </template>
 
 <script>
+import {Dialog,Toast} from 'vant';
+
 export default {
 	name: 'login',
 	data () {
 	    return {
-	      	loginBtnShowLoad : false
+	      	loginBtnShowLoad : false,
+	      	username : '',
+	      	password : ''
 	    }
 	},
 	methods: {
     	loginFn () {
     		let _t = this;
     		_t.loginBtnShowLoad = true;
-//  		this.$http({
-//  			method:'get',
-//  			url : ''
-//  		})
+    		//TODO
+    		//用户名或者密码为空
+    		this.$http({
+    			method:'get',
+    			url : '/api/v1/signin',
+    			params : {
+    				username : _t.username,
+    				password : _t.password
+    			}
+    		}).then(({data}) => {
+    			console.log(data);
+    			if (!data){
+    				//请求失败
+    				//TODO
+    				return;
+    			}
+    			if (data.status == 1){
+    				let _data = data.data;
+    				
+    				_t.$store.commit('userInfo',_data);
+    				
+    				Toast.success({
+    					message : '登录成功',
+    					duration: 3000,
+    				})
+    				
+    				setTimeout(function(){
+    					_t.$router.push('/cardmanage');
+    				},3000)
+    			} else {
+    				Toast({
+    					message : data.errormsg,
+    					forbidClick : true,
+    				});
+    			}
+    			_t.loginBtnShowLoad = false;
+    		})
     	}
   	},
   	mounted (){

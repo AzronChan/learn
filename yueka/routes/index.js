@@ -62,7 +62,6 @@ router.get('/', function(req, res, next) {
 });
 
 
-
 /*
  * 登录
  */
@@ -79,23 +78,30 @@ router.get('/api/v1/signin',function(req,res,next){
 		let data = req.query;
 		user.findOne({username : data.username},function(err,doc){
 			if (err){
-				res.send('链接异常')
+				return res.send('链接异常');
 			}
-			if (doc.password == data.password){
-				res.send(JSON.stringify({
-					status : 1,
-					data: {
-						username : doc.username,
-						age : doc.age,
-						location : doc.location
-					},
-					errorcode : 0,
-					errormsg : '登录成功'
-				}))
+			if (doc){
+				if (doc.password == data.password){
+					res.send(JSON.stringify({
+						status : 1,
+						data: {
+							username : doc.username,
+							age : doc.age,
+							location : doc.location,
+							userid : doc.userid
+						},
+						errorcode : 0,
+						errormsg : '登录成功'
+					}))
+				} else {
+					return errHandle(res,{
+						errorName : 'loginPswErr'
+					})
+				}
 			} else {
 				return errHandle(res,{
-					errorName : 'loginPswErr'
-				})
+					errorName : 'userNotfind'
+				})	
 			}
 		})
 		
