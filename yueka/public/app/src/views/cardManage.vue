@@ -1,26 +1,27 @@
 <template>
 	<div class="card_manage">
-		<van-tabs style="position:static">
-		  <van-tab v-for="item in tabs" :title="item.title" swipeable>
+		<van-tabs >
+		  <van-tab v-for="item in tabs" :title="item.title" swipeable >
 		  		<div class="card_list" v-if="item.data.length != 0">
 			  		<ul>
 			  			<li v-for="(val,index) in item.data" :class="[val.receiver != '' ? 'received_card' : '' , val.useStatus == 1 ? 'used_card_list' : '']" >
-			  				<h3>{{val.title}}</h3>
+			  				<h3>{{val.cardname}}</h3>
 			  				<p class="depict"><span>描述：</span>{{val.depict}}</p>
 			  				<p><span class="left_title">有效期限：</span>{{val.startTime}} 至 {{val.endTime}}</p>
-			  				<p v-if="val.giverID != userid">
+			  				<p v-if="val.giverID != userID">
 			  					{{val.giver}} 赠送于 {{val.giveTime}}
 			  				</p>
 			  				<p v-else-if="val.receiver != ''">
 			  					已赠送给 {{val.receiver}}
 			  				</p>
-			  				<div class="handle_btn" v-if="val.giverID == userid && val.receiver == ''">
+			  				<div class="handle_btn" v-if="val.giverID == userID && val.receiver == ''">
 			  					<span @click='deleteCard(index)'>删除</span><span @click='giveCardShow(index)'>赠送给好友</span>
 			  				</div>
 			  				<div class="handle_btn" v-else-if="item.title == '已使用卡片'">
 			  					<span @click='deleteCard(index)'>删除</span>
 			  				</div>
 			  				<div class="handle_btn" v-else-if="val.receiver != ''">
+			  					<span @click='deleteCard(index)'>删除</span><span @click="cardUse(index)">使用</span>
 			  				</div>
 			  				<div class="handle_btn" v-else>
 			  					<span @click='deleteCard(index)'>删除</span><span @click="cardUse(index)">使用</span>
@@ -44,7 +45,6 @@
 			  	v-model="giveCardDialogShow"
 			  	show-cancel-button
 			  	title="赠送"
-			  	@confirm='giveCard()'
 			  	:before-close='checkFriName'
 			>
 			<div class="van-hairline--top" style="height: 1px;margin: .3rem 0 .1rem"></div>
@@ -60,44 +60,19 @@
 
 <script>
 	import {Dialog,Toast} from 'vant';
+	import { mapState } from 'vuex'
 	
 	export default {
 		name: 'cardmanage',
 		data() {
 			return {
-				userid : '123123',
 				receiver : '',
 				giveCardDialogShow : false,
 				giveCardIndex : 0,
 				tabs : [
 					{
 						title :'我的卡片',
-						data : [
-//							{
-//								title : '抱抱卡',
-//								depict : '这是一大段描述',
-//								startTime : '2018-07-01',
-//								endTime : '2018-07-11',
-//								useStatus : 0,
-//								cardStatus :0,
-//								giver : 'czl',
-//								giverID : '123123',
-//								receiver : '',
-//								giveTime : '2018-07-05'
-//							},
-//							{
-//								title : '亲亲卡',
-//								depict : '这是一大段描述',
-//								startTime : '2018-07-01',
-//								endTime : '2018-07-11',
-//								useStatus : 0,
-//								cardStatus :0,
-//								giver : 'czl',
-//								receiver : '',
-//								giverID : '1231234',
-//								giveTime : '2018-07-05'
-//							}
-						]
+						data : []
 					},
 					{
 						title :'已使用卡片',
@@ -106,27 +81,101 @@
 				]
 			}
 		},
+		computed :mapState({
+			userID : state => state.userInfo.userid
+		}),
 		mounted (){
 			let _t = this;
-			this.$http({
-				method : 'get',
-				url  : '/getMyCard',
-				params : {
-					username : 'czl'
-				}
-			}).then(({data}) => {
-				console.log(data)
-				if (data.status == 1){
-					console.log(data.data[0])
-					_t.tabs[0].data = data.data;
-				}
-			})
+			
+			_t.username = (function(){
+				return _t.$store.state.userInfo.username;
+			})()
+			_t.getCard();
+			
 		},
 		methods: {
+			getCard (){
+				console.log('11111111')
+				console.log('=======>获取卡片信息')
+				let _t = this;
+				this.$http({
+					method : 'get',
+					url  : '/api/v1/getMyCard',
+					params : {
+						username : _t.username
+					}
+				}).then(({data}) => {
+					console.log(data)
+					if (data.status == 1){
+						console.log(data.data[0])
+						_t.tabs[0].data = data.data;
+					}
+				})
+			},
 			routerLink(type){
 				this.$router.push({ path: '/' + type });
 			},
-			cardUse(index) {
+			cardHandle (obj,cb){
+				console.log(obj)
+				let toast = Toast.loading({
+				  	mask: true,
+				  	loadingType : 'spinner',
+				  	message : '正在提交...',
+				  	duration : 0
+				});
+					
+				let _t = this,
+					data = obj.data,
+					successMsg = '',
+					params = {
+						type : obj.type,
+						cardid : data.id,
+						username : data.giver
+					};
+				console.log(data)
+				switch (obj.type){
+					case 'delete':
+						if (data.receiver != ''){
+							params.username = data.receiver;
+						}
+						successMsg = '删除成功';
+						break;
+					case 'give' :
+						console.log(_t.receiver)
+						successMsg = '赠送成功';
+						params.receiver = _t.receiver;
+						break;
+				}
+				
+				
+				_t.$http({
+					method : 'get',
+					url : '/api/v1/handle',
+					params : params
+				}).then(({data})=>{
+					toast.clear();
+					if (data && data.status == 1){
+						Toast.success({
+	    					message : successMsg,
+	    					duration: 600,
+	    				})
+						_t.getCard();
+						cb && cb();
+					} else {
+						//操作失败
+						Toast.fail({
+	    					message : data.errormsg || '网络异常，请重试',
+	    					duration: 600,
+	    				})
+						cb && cb();
+					}
+				})
+			},
+			/**
+			 * 使用卡片
+			 * @param {obj} 卡片ID
+			 */
+			cardUse(obj) {
 				let _t = this,
 					data = this.tabs[0].data;
 				Dialog.confirm({
@@ -141,17 +190,27 @@
 					  	duration : 0
 					});
 					
-					setTimeout(function(){
-						//TODO 使用请求
-						toast.clear();
-						Toast.success({
-							message : '使用成功'
-						})
-						_t.resetCardList({
-							type : 'myCard',
-							index : index
-						})
-					},0)
+					this.$http({
+						methor : 'get',
+						url : '/api/v1/handle',
+						params : {
+							type : 'use',
+							cardid : obj.cardid,
+							username : ''
+						}
+					}).then(({data})=>{
+						console.log(data);
+						if (data && data.status == 1){
+							Toast.success({
+		    					message : '使用成功',
+		    					duration: 300,
+		    				})
+							
+							_t.getCard();
+						} else {
+							
+						}
+					})
 					
 				}).catch(() => {
 					// on cancel
@@ -159,31 +218,18 @@
 			},
 			deleteCard (index){
 				let _t = this,
-					data = this.tabs[0].data;
+					data = this.tabs[0].data[index];
+				
 				Dialog.confirm({
 				  message: '是否确认删除',
 				  className : 'dialog_content'
 				}).then(function(){
-				  	// on confirm
-				  	let toast = Toast.loading({
-					  	mask: true,
-					  	loadingType : 'spinner',
-					  	message : '正在拼了命提交',
-					  	duration : 0
-					});
-					
 					setTimeout(function(){
-						//TODO 删除请求
-						toast.clear();
-						Toast.success({
-							message : '删除成功'
-						})
-						_t.resetCardList({
-							type : 'deleteCard',
-							index : index
+						_t.cardHandle({
+							type : 'delete',
+							data : data
 						})
 					},0)
-					
 				}).catch(() => {
 					// on cancel
 				});
@@ -197,25 +243,15 @@
 			/**
 			 * 赠送卡片
 			 */
-			giveCard(){
-				let _t = this,
-					toast = Toast.loading({
-				  	mask: true,
-				  	loadingType : 'spinner',
-				  	message : '正在拼了命提交',
-				  	duration : 0
-				});
-				setTimeout(function(){
-					//TODO 赠送请求
-					toast.clear();
-					Toast.success({
-						message : '赠送成功'
-					})
-					_t.resetCardList({
-						type : 'giveCard',
-						index : _t.giveCardIndex
-					})
-				},300)
+			giveCard(callback){
+				let _t = this;
+				
+				_t.cardHandle({
+					type : 'give',
+					data : _t.tabs[0].data[this.giveCardIndex]
+				},() => {
+					callback && callback(); 
+				})
 			},
 			/**
 			 * 重置卡片显示UI
@@ -243,10 +279,14 @@
 				}
 			},
 			checkFriName (action,done){
-//				done(false);
-				setTimeout(function(){
-					done();
-				},2000)
+				let _t = this;
+				
+				if (action === 'confirm'){
+					_t.giveCard(() => {
+						done();
+					});
+				}
+				
 			}
 		}
 	}
@@ -258,9 +298,10 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
+		overflow: auto;
 	}
 	.add_card {
-		position: absolute;
+		position: fixed;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%,-50%);

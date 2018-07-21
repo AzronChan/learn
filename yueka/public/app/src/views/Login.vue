@@ -3,7 +3,7 @@
 		<div class="login_box">
 			<h3 class="login_title">登 录</h3>
 			<input type="text" placeholder="请输入用户名" value="" v-model="username"/>
-			<input type="text" placeholder="请输入密码" value="" v-model="password"/>
+			<input type="password" placeholder="请输入密码" value="" v-model="password"/>
 			<van-button type="primary" class='login_btn' size="large" block @click='loginFn()'  :loading="loginBtnShowLoad"> 登 录 </van-button>
 			<p class="sign_up_link">还没有账号？<router-link to='/signup'>立即注册</router-link></p>
 		</div>
@@ -43,18 +43,26 @@ export default {
     				return;
     			}
     			if (data.status == 1){
-    				let _data = data.data;
+    				let _data = data.data,_str = '';
     				
     				_t.$store.commit('userInfo',_data);
     				
+    				
+    				for (let i in _data){
+    					_str += '&' + i + '=' + _data[i];
+    				}
+    				_str.substr(1,_str.length);
+    				console.log(_t.$tool)
+    				_t.$tool.Cookie.write('yueka',_str,Math.floor(new Date().getTime()/1000) + 30 * 24 * 60 * 60)
+    				
     				Toast.success({
     					message : '登录成功',
-    					duration: 3000,
+    					duration: 600,
     				})
     				
     				setTimeout(function(){
     					_t.$router.push('/cardmanage');
-    				},3000)
+    				},600)
     			} else {
     				Toast({
     					message : data.errormsg,
@@ -99,7 +107,7 @@ export default {
 	margin: 0 0 .36rem;
 	padding: .12rem .2rem;
 	font-size: .36rem;
-	line-height: .24rem;
+	line-height: .76rem; 
 	border: none;
 }
 .login_btn {

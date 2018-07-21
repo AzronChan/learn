@@ -20,7 +20,7 @@
 		name: 'userinfo',
 		data() {
 			return {
-				username : 'czl',
+				username : '',
 				location : '广东 广州',
 				sign : '签名'
 			}

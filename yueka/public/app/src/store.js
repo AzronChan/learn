@@ -8,10 +8,11 @@ export default new Vuex.Store({
 		navBarShow : false,
 		userInfo : {
 			userid : 0,
-			username : 'czl',
+			username : '',
 			location : '',
 			sign : ''
-		}
+		},
+		card : []
 	},
 	mutations: {
 		navBarShow(state,payload){
@@ -22,6 +23,6 @@ export default new Vuex.Store({
 		}
 	},
 	actions: {
-
+		
 	}
 })

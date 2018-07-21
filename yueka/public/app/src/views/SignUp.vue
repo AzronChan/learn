@@ -5,20 +5,19 @@
 			<van-cell-group>
 				<van-field v-model="username" required clearable label="用户名" icon="question" placeholder="请输入用户名" @click-icon="$toast('question')" :error='usernameErr' @input="inpChange({type:'username'})"/>
 
-				<van-field v-model="password" type="password" label="密码" placeholder="请输入密码" required @click='passwordClick($event)' :error-message="errorMessage.password"/>
+				<van-field v-model="password" type="password" label="密码" placeholder="请输入密码" required @click='passwordClick($event)' :error-message="errorMessage.password" @input="inpChange({type:'password'})"/>
 
-				<van-field v-model="confirmPassword" type="password" label="重复密码" placeholder="请再次输入密码" required @click='passwordClick($event)' :error-message="errorMessage.confirmPassword" />
+				<van-field v-model="confirmPassword" type="password" label="重复密码" placeholder="请再次输入密码" required @click='passwordClick($event)' :error-message="errorMessage.confirmPassword" @input="inpChange({type:'confirmPassword'})"/>
 
-				<van-field v-model="tel" required label="手机号" placeholder="请输入手机号" :error-message="errorMessage.tel" />
+				<van-field v-model="tel" required label="手机号" placeholder="请输入手机号" :error-message="errorMessage.tel" @input="inpChange({type:'tel'})"/>
 				
-				<van-field v-model="mail" required label="邮箱地址" placeholder="请输入邮箱地址" :error-message="errorMessage.mail" />
+				<van-field v-model="mail" required label="邮箱地址" placeholder="请输入邮箱地址" :error-message="errorMessage.mail" @input="inpChange({type:'mail'})"/>
 				
-				<van-radio-group v-model="radio">
-				  
-				    <van-cell title="男生" v-model='radio' clickable @click="radio = '1'">
+				<van-radio-group v-model="sex">
+				    <van-cell title="男生" clickable @click="sex = '1'">
 				      <van-radio name="1" />
 				    </van-cell>
-				    <van-cell title="女生" v-model='radio' clickable @click="radio = '2'">
+				    <van-cell title="女生"  clickable @click="sex = '2'">
 				      <van-radio name="2" />
 				    </van-cell>
 				</van-radio-group>
@@ -44,7 +43,7 @@
 				username: '',
 				tel: '',
 				mail:'',
-				radio : '',
+				sex : 1,
 				usernameErr : false,
 				errorMessage : {
 					password : '',
@@ -63,19 +62,34 @@
 
 			},
 			inpChange(obj){
+				if (!obj.type){
+					return;
+				}
 				if (obj.type == 'username'){
 					this.usernameErr = false;
+				} else if (obj.type == 'password'){
+					this.errorMessage.password = '';
+				} else if (obj.type == 'confirmPassword'){
+					this.errorMessage.confirmPassword = '';
+				} else if (obj.type == 'mail'){
+					this.errorMessage.mail = '';
+				} else if (obj.type == 'tel'){
+					this.errorMessage.tel = '';
 				}
 			},
 			submit() {
 				let _t = this;
 				_t.submitBtnShowLoad = true;
-				//TODO 检验正确性
-				if (_t.replaceSpace(_t.username) == ''){
+				_t.username = _t.replaceSpace(_t.username);
+				_t.password = _t.replaceSpace(_t.password);
+				_t.confirmPassword = _t.replaceSpace(_t.confirmPassword);
+				_t.tel = _t.replaceSpace(_t.tel);
+				_t.mail = _t.replaceSpace(_t.mail);
+				if (_t.username == ''){
 					_t.usernameErr = true;
 					return _t.submitBtnShowLoad = false;
 				}
-				if (_t.replaceSpace(_t.password) == ''){
+				if (_t.password == ''){
 					_t.errorMessage.password = '密码不能为空';
 					return _t.submitBtnShowLoad = false;
 				}
@@ -83,8 +97,12 @@
 					_t.errorMessage.confirmPassword = '密码输入不一致';
 					return _t.submitBtnShowLoad = false;
 				}
-				if (!errorMessage.mail.match(/1/g)){
-					_t.errorMessage.tel = '请输入正确的邮箱地址';
+				if (!_t.tel.match(/^[1][3,4,5,7,8][0-9]{9}$/)){
+					_t.errorMessage.tel = '请输入正确的手机号码';
+					return _t.submitBtnShowLoad = false;
+				}
+				if (!_t.mail.match(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/g)){
+					_t.errorMessage.mail = '请输入正确的邮箱地址';
 					return _t.submitBtnShowLoad = false;
 				}
 				this.$http({
@@ -94,7 +112,8 @@
 	    				username : _t.username,
 	    				password : _t.password,
 	    				tel : _t.tel,
-	    				radio : _t.radio
+	    				sex : _t.sex,
+	    				mail : _t.mail
 	    			}
 	    		}).then(({data}) => {
 	    			console.log(data);
@@ -106,16 +125,14 @@
 	    			if (data.status == 1){
 	    				let _data = data.data;
 	    				
-	    				_t.$store.commit('userInfo',_data);
-	    				
 	    				Toast.success({
 	    					message : '注册成功',
 	    					duration: 3000,
 	    				})
 	    				
-//	    				setTimeout(function(){
-//	    					_t.$router.push('/login');
-//	    				},3000)
+	    				setTimeout(function(){
+	    					_t.$router.push('/');
+	    				},3000)
 	    			} else {
 	    				Toast({
 	    					message : data.errormsg,

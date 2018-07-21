@@ -13,8 +13,12 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'login',
+      title : '登录',
+      meta : {
+      	title : '登录'
+      },
       component: Login
     },
     {

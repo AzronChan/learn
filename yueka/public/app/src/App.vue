@@ -41,11 +41,11 @@
 	}
 
 	export default {
-		name: 'app',
+		name: 'yueka',
 		data (){
-				return {
-					
-				}
+			return {
+				
+			}
 		}
 		,
 		components: {
@@ -56,10 +56,28 @@
 			// 箭头函数可使代码更简练
 			navBarShow: state => state.navBarShow
 		}),
+		created (){
+			let cookie = this.$tool.Cookie.read('yueka');
+			if (cookie){
+				this.$store.commit('userInfo',{
+					userid :  this.$tool.Cookie.read('yueka','userid'),
+					username : this.$tool.Cookie.read('yueka','username')
+				})
+				console.log(33333)
+				this.$router.push('/cardmanage');
+			} else {
+				this.$router.push('/login')
+			}
+		},
+		mounted(){
+			
+		},
 		watch : {
 			'$route' (to,from){
-				console.log(to.name)
-				if (to.name.match(/cardmanage|options/g)){
+				if (!to.name){
+					return;
+				}
+				if (to.name.match(/cardmanage|options|login/g)){
 					this.$store.commit('navBarShow',false);
 				} else {
 					this.$store.commit('navBarShow',true);
@@ -71,6 +89,15 @@
 
 <style lang="scss">
 	@import url("assets/css/base.scss");
+	
+	/* 全局 webkit滚动条
+	--------------------------------------------*/
+	/*::-webkit-scrollbar{width:8px;height: 8px;background: transparent;}
+	::-webkit-scrollbar-thumb{border-radius: 16px;background-color: #d6d7d9;}
+	::-webkit-scrollbar-thumb:hover{background-color: #c0c3c5;}
+	::-webkit-scrollbar-thumb:active{background-color: #acafb2;}
+	::-webkit-scrollbar-button{background: transparent;height: 2px;}*/
+	
 	body,
 	html {
 		width: 100%;
@@ -87,11 +114,11 @@
 	}
 	
 	.main {
-		height: calc(100% - 1.4rem);
-		padding: 0px 0 1.4rem;
+		height: calc(100% - 1.2rem);
+		padding: 0px 0 1.2rem;
 		background: #f8f8f8;
 		&.main_pt46 {
-			height: calc(100% - 46px - 1.4rem);
+			height: calc(100% - 46px - 1.2rem);
 			padding-top: 46px;
 		}
 	}
