@@ -130,18 +130,20 @@
 					_t.errorMessage.depict = '卡片描述不可为空';
 					return _t.submitBtnShowLoad = false;
 				}
-				if (_t.cardEndTimeFormat == ''){
-					_t.errorMessage.cardStartTime = '结束时间不可为空';
-					return _t.submitBtnShowLoad = false;
-				}
 				if (_t.cardStartTimeFormat == ''){
 					_t.errorMessage.cardStartTime = '起始时间不可为空';
 					return _t.submitBtnShowLoad = false;
 				}
-				if (new Date(_t.cardStartTimeFormat).getTime() < new Date(_t.cardStartTimeFormat).getTime()){
-					_t.errorMessage.cardStartTime = '结束时间不能比起始时间前';
+				if (_t.cardEndTimeFormat == ''){
+					_t.errorMessage.cardEndTime = '结束时间不可为空';
 					return _t.submitBtnShowLoad = false;
 				}
+				if (new Date(_t.cardStartTimeFormat).getTime() < new Date(_t.cardStartTimeFormat).getTime()){
+					_t.errorMessage.cardEndTime = '结束时间不能比起始时间前';
+					return _t.submitBtnShowLoad = false;
+				}
+				
+				this.cardName.indexOf('卡') < 0 && (this.cardName += '卡');
 				
 				this.$http({
 					method : 'get',

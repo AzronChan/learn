@@ -24,7 +24,7 @@
 
 			</van-cell-group>
 			<van-button type="primary" class='submit_btn' size="large" block @click='submit()' :loading='submitBtnShowLoad'> 注 册 </van-button>
-			<p class="login_link">已有账号？<router-link to='/'>立即登录</router-link></p>
+			<p class="login_link">已有账号？<router-link to='/login'>立即登录</router-link></p>
 		</div>
 
 	</div>
@@ -127,12 +127,12 @@
 	    				
 	    				Toast.success({
 	    					message : '注册成功',
-	    					duration: 3000,
+	    					duration: 600,
 	    				})
 	    				
 	    				setTimeout(function(){
-	    					_t.$router.push('/');
-	    				},3000)
+	    					_t.$router.push('/login');
+	    				},600)
 	    			} else {
 	    				Toast({
 	    					message : data.errormsg,

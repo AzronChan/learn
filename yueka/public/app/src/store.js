@@ -12,13 +12,21 @@ export default new Vuex.Store({
 			location : '',
 			sign : ''
 		},
-		card : []
+		tabBarShow:true,
+		rightText : ''
 	},
 	mutations: {
-		navBarShow(state,payload){
+		rightText (state,payload){
+			state.rightText = payload
+		},
+		navBarShow (state,payload){
 			state.navBarShow = payload
 		},
-		userInfo(state,payload) {
+		tabBarShow (state,payload){
+			console.log(payload)
+			state.tabBarShow = payload
+		},
+		userInfo (state,payload) {
 			state.userInfo = payload
 		}
 	},

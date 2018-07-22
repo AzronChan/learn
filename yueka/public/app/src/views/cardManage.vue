@@ -1,7 +1,7 @@
 <template>
 	<div class="card_manage">
-		<van-tabs >
-		  <van-tab v-for="item in tabs" :title="item.title" swipeable >
+		<van-tabs @click="tabClick">
+		  <van-tab v-for="item in tabs" :title="item.title" swipeable  >
 		  		<div class="card_list" v-if="item.data.length != 0">
 			  		<ul>
 			  			<li v-for="(val,index) in item.data" :class="[val.receiver != '' ? 'received_card' : '' , val.useStatus == 1 ? 'used_card_list' : '']" >
@@ -10,9 +10,6 @@
 			  				<p><span class="left_title">有效期限：</span>{{val.startTime}} 至 {{val.endTime}}</p>
 			  				<p v-if="val.giverID != userID">
 			  					{{val.giver}} 赠送于 {{val.giveTime}}
-			  				</p>
-			  				<p v-else-if="val.receiver != ''">
-			  					已赠送给 {{val.receiver}}
 			  				</p>
 			  				<div class="handle_btn" v-if="val.giverID == userID && val.receiver == ''">
 			  					<span @click='deleteCard(index)'>删除</span><span @click='giveCardShow(index)'>赠送给好友</span>
@@ -69,6 +66,7 @@
 				receiver : '',
 				giveCardDialogShow : false,
 				giveCardIndex : 0,
+				tabShowing : '',
 				tabs : [
 					{
 						title :'我的卡片',
@@ -94,22 +92,37 @@
 			
 		},
 		methods: {
+			tabClick (index,title){
+				this.tabShowing = title;
+			},
 			getCard (){
-				console.log('11111111')
 				console.log('=======>获取卡片信息')
 				let _t = this;
 				this.$http({
 					method : 'get',
 					url  : '/api/v1/getMyCard',
 					params : {
+						t : Math.random(),
 						username : _t.username
 					}
 				}).then(({data}) => {
-					console.log(data)
 					if (data.status == 1){
-						console.log(data.data[0])
-						_t.tabs[0].data = data.data;
+						let _arr = data.data;
+						_t.tabs[1].data = [];
+						_t.tabs[0].data = [];
+						for (let i = 0; i < _arr.length; i++){
+							if (_arr[i].useStatus == 1){
+								_t.tabs[1].data.push(_arr[i])
+							} else {
+								console.log(111111)
+								
+								_t.tabs[0].data.push(_arr[i])
+							}
+						}
+						
 					}
+				}).catch(() => {
+					Toast('网络异常，请重试')
 				})
 			},
 			routerLink(type){
@@ -123,19 +136,20 @@
 				  	message : '正在提交...',
 				  	duration : 0
 				});
-					
+				
 				let _t = this,
 					data = obj.data,
 					successMsg = '',
+					timeout = 5000,
 					params = {
 						type : obj.type,
 						cardid : data.id,
 						username : data.giver
 					};
-				console.log(data)
 				switch (obj.type){
 					case 'delete':
 						if (data.receiver != ''){
+							//接受者删除
 							params.username = data.receiver;
 						}
 						successMsg = '删除成功';
@@ -144,6 +158,11 @@
 						console.log(_t.receiver)
 						successMsg = '赠送成功';
 						params.receiver = _t.receiver;
+						break;
+					case 'use' :
+						successMsg = '使用成功';
+						//只有接受者才可以使用
+						params.username = data.receiver;
 						break;
 				}
 				
@@ -159,7 +178,9 @@
 	    					message : successMsg,
 	    					duration: 600,
 	    				})
-						_t.getCard();
+						setTimeout(()=>{
+							_t.getCard();
+						},1000)
 						cb && cb();
 					} else {
 						//操作失败
@@ -169,56 +190,34 @@
 	    				})
 						cb && cb();
 					}
+				}).catch(()=>{
+					Toast('网络异常，请重试')
 				})
 			},
 			/**
 			 * 使用卡片
-			 * @param {obj} 卡片ID
+			 * @param {index} 卡片位置
 			 */
-			cardUse(obj) {
+			cardUse(index) {
 				let _t = this,
-					data = this.tabs[0].data;
+					data = this.tabs[0].data[index];
 				Dialog.confirm({
 				  message: '请与赠送者确认是否立即执行',
 				  className : 'dialog_content'
 				}).then(function(){
 				  	// on confirm
-				  	let toast = Toast.loading({
-					  	mask: true,
-					  	loadingType : 'spinner',
-					  	message : '正在拼了命提交',
-					  	duration : 0
-					});
-					
-					this.$http({
-						methor : 'get',
-						url : '/api/v1/handle',
-						params : {
-							type : 'use',
-							cardid : obj.cardid,
-							username : ''
-						}
-					}).then(({data})=>{
-						console.log(data);
-						if (data && data.status == 1){
-							Toast.success({
-		    					message : '使用成功',
-		    					duration: 300,
-		    				})
-							
-							_t.getCard();
-						} else {
-							
-						}
+				  
+					_t.cardHandle({
+						type : 'use',
+						data : data
 					})
+				}).catch(()=>{
 					
-				}).catch(() => {
-					// on cancel
-				});
+				})
 			},
 			deleteCard (index){
 				let _t = this,
-					data = this.tabs[0].data[index];
+					data = _t.tabShowing == '已使用卡片' ?  _t.tabs[1].data[this.giveCardIndex] : _t.tabs[0].data[this.giveCardIndex];
 				
 				Dialog.confirm({
 				  message: '是否确认删除',

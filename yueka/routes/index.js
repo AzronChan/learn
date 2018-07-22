@@ -88,7 +88,8 @@ router.get('/api/v1/signin',function(req,res,next){
 							username : doc.username,
 							age : doc.age,
 							location : doc.location,
-							userid : doc.userid
+							userid : doc.userid,
+							sex : doc.sex
 						},
 						errorcode : 0,
 						errormsg : '登录成功'
@@ -199,7 +200,6 @@ router.get('/api/v1/getMyCard',function(req,res,next){
  * startTime 起始有效期
  * endTime 结束有效期
  * receiver 卡片被赠送者
- * 
  */
 router.get('/api/v1/creatMyCard',function(req,res,next){
 	let data = req.query;
@@ -256,7 +256,14 @@ router.get('/api/v1/creatMyCard',function(req,res,next){
 
 /*
  * 卡片处理
- * type  use ： 使用
+ * type 操作类型  use ： 使用 | delete ：删除 | give ： 赠送
+ * id 卡片名字
+ * useStatus 卡片使用状态  1 ：使用
+ * cardStatus 卡片状态 1 ： 赠送
+ * giveTime //赠送时间
+ * startTime 起始有效期
+ * endTime 结束有效期
+ * receiver 卡片被赠送者
  */
 router.get('/api/v1/handle',function(req,res,next){
 	console.log(11111)
@@ -272,11 +279,12 @@ router.get('/api/v1/handle',function(req,res,next){
 	}
 	user.findOne({username : data.username},function(err,obj){
 		if (obj){
-			let cards = obj.cards,cardObj = null;
+			let cards = obj.cards,cardObj = null,index = 0;
 			for (var i = 0; i < cards.length; i++){
 				console.log(cards[i].id , data.cardid)
 				if (cards[i].id == data.cardid){
 					cardObj = cards[i];
+					index = i;
 					break;
 				}
 			}
@@ -295,7 +303,6 @@ router.get('/api/v1/handle',function(req,res,next){
 					}
 				})
 			} else if (data.type == 'give'){
-				console.log(222)
 				if (!data.receiver){
 					res.send({
 						status : 0,
@@ -340,61 +347,23 @@ router.get('/api/v1/handle',function(req,res,next){
 						})
 					}
 				})
+			} else if (data.type == 'use'){
+				cards[index].useStatus = 1;
+				user.updateOne({
+					username : data.username
+				},{cards : cards},(err1,res1) => {
+					if (res1 && res1.ok == 1){
+						res.send({
+							status : 1,
+							data: {},
+							errorcode : 0,
+							errormsg : ''
+						})
+					}
+				})
 			}
 		}
 	})
-	
-//	user.findOne({username : data.username},function(err,obj){
-//		if (obj){
-//			let cards = obj.cards,cardObj = null;
-//			for (var i = 0; i < cards.length; i++){
-//				if (cards[i].id == data.cardid){
-//					cardObj = cards[i];
-//					break;
-//				}
-//			}
-//			if (cardObj.cardStatus == 1){
-//				return errHandle(res,{
-//					errorName : 'cardGived'
-//				})
-//			}
-//			cardObj.cardStatus = 1;
-//			user.updateOne({
-//				username : data.username
-//			},{cards : cards},function(err,res1){
-//				if (res1 && res1.ok == 1){
-//					user.findOne({
-//						username : data.receiver
-//					},(err,obj1) => {
-//						if (obj){
-//							let _arr = obj1.cards;
-//							cardObj.giver = data.username;
-//							cardObj.giveTime = new Date().format('yyyy-MM-dd');
-//							_arr.push(cardObj);
-//							user.updateOne({
-//								username : data.receiver
-//							},{cards : _arr},(err,res2) => {
-//								if (res1&& res1.ok == 1){
-//									res.send({
-//										status : 1,
-//										data: {},
-//										errorcode : 0,
-//										errormsg : ''
-//									})
-//								}
-//							})
-//						}
-//					})
-//				} else {
-//					return errHandle(res,{
-//						errorName : 'deleteCardErr'
-//					})
-//				}
-//			})
-//		} else {
-//			
-//		}
-//	})
 })
 
 /*

@@ -82,6 +82,14 @@ var util = {
 		else return false
 	},
 	/**
+	 * 验证手机号正确性
+	 * @param {String} str
+	 */
+	testTel : function (str){
+		if (str.match(/^[1][3,4,5,7,8][0-9]{9}$/)) return true;
+		else return false
+	},
+	/**
 	 * 冒泡算法
 	 * @id bubbleSort
 	 * @param {Array} 需排列数组

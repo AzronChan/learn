@@ -1,6 +1,6 @@
 <template>
-	<div class="tab_bar">
-		<van-tabbar fixed class="content">
+	<div class="tab_bar" :class="[ tabBarShow ? '' : 'tab_bar_none']">
+		<van-tabbar fixed class="content" >
 		  	<van-tabbar-item v-for="(item,index) in tabs" @click='routerLink(index,item.routerType)' :class="[currentTab == index ? 'current' : '']">
 		  		<van-icon :name="item.iconName" class="tab_bar_icon"></van-icon><p class="tab_bar_text">{{item.tabName}}</p>
 		  	</van-tabbar-item>
@@ -9,6 +9,8 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex'
+	
 	export default {
 		name: 'login',
 		data() {
@@ -28,7 +30,9 @@
 				]
 			}
 		},
-
+		computed: mapState({
+			tabBarShow : state => state.tabBarShow
+		}),
 		methods: {
 			routerLink(index,type){
 				this.currentTab = index;
@@ -59,6 +63,9 @@
     line-height: .4rem;
     font-size: .2rem;
     margin: .05rem 0 0;
+}
+.tab_bar_none {
+	display: none;
 }
 
 </style>

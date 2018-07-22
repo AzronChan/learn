@@ -63,7 +63,6 @@
 					userid :  this.$tool.Cookie.read('yueka','userid'),
 					username : this.$tool.Cookie.read('yueka','username')
 				})
-				console.log(33333)
 				this.$router.push('/cardmanage');
 			} else {
 				this.$router.push('/login')
@@ -76,6 +75,18 @@
 			'$route' (to,from){
 				if (!to.name){
 					return;
+				}
+				console.log(to.name)
+				if (to.name == 'userinfo'){
+					console.log(111)
+					this.$store.commit('rightText','注销');
+				} else {
+					this.$store.commit('rightText','');
+				}
+				if (to.name.match(/login|signup/g)){
+					this.$store.commit('tabBarShow',false);
+				} else {
+					this.$store.commit('tabBarShow',true);
 				}
 				if (to.name.match(/cardmanage|options|login/g)){
 					this.$store.commit('navBarShow',false);
