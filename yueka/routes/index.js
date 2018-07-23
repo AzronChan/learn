@@ -4,6 +4,8 @@ var router = express.Router(),
 	user = require('../models/user'),
 	cardIdCounter = require('../models/cardIdCounter'),
 	errorBase = require('../models/error-base');
+const fs = require('fs');
+const path = require('path');
 
 Date.prototype.format = function(format) {
     var o = {
@@ -22,6 +24,24 @@ Date.prototype.format = function(format) {
             RegExp.$1.length == 1 ? o[k] :
             ("00" + o[k]).substr(("" + o[k]).length));
         return format;
+}
+
+
+/**
+ * 检查图片目录 
+ * @param {String} dirname
+ */
+function checkMadeDir(dirname) {
+	if (!dirname) return;
+	let _dirname = path.dirname(dirname);
+	if(fs.existsSync(_dirname)) {
+		return true;
+	} else {
+		if(checkMadeDir(_dirname)) {
+			fs.mkdirSync(_dirname);
+			return true;
+		}
+	}
 }
 
 
@@ -63,6 +83,58 @@ router.get('/', function(req, res, next) {
 
 
 /*
+ * 更新头像
+ */
+router.post('/api/v1/upload',(req,res,next) => {
+	if (!req.body.imgdata || !req.body.userid){
+		res.send(JSON.stringify({
+			status : 0,
+			data: {},
+			errorcode : 0,
+			errormsg : '参数错误'
+		}))
+	}
+	let imgData = req.body.imgdata;
+    //过滤data:URL
+    let base64Data = imgData.replace(/^data:image\/\w+;base64,/, ""),
+    	time = new Date().format('yyyy-MM-dd-hh-mm-ss-S').split('-').join(''),
+    	imgPath = path.join(__dirname,'../public/upload/' + time+'.png'),
+    	dataBuffer = new Buffer(base64Data, 'base64');
+   
+   	console.log(imgPath)
+   	console.log(time)
+   	
+   	checkMadeDir(imgPath);
+	 fs.writeFile(imgPath, dataBuffer, function(err) {
+        if(err){
+           	return;
+        } else {
+        	console.log(req.body.userid,imgPath)
+        	//TODO
+        	let imgUrl = 'http://localhost:3000/upload/' + time + '.png'
+        	user.updateOne({
+				userid : req.body.userid
+			},{userpic : imgUrl},function(err,res1){
+				if (res1 && res1.ok == 1){
+					return res.send({
+						status : 1,
+						data: {},
+						errorcode : 0,
+						errormsg : ''
+					})
+				} else {
+					console.log(err,res1)
+					return errHandle(res,{
+						errorName : 'creatCardErr'
+					})
+				}
+			})
+        }
+    })
+
+})
+
+/*
  * 登录
  */
 router.get('/api/v1/signin',function(req,res,next){
@@ -89,7 +161,8 @@ router.get('/api/v1/signin',function(req,res,next){
 							age : doc.age,
 							location : doc.location,
 							userid : doc.userid,
-							sex : doc.sex
+							sex : doc.sex,
+							userpic : doc.userpic || ''
 						},
 						errorcode : 0,
 						errormsg : '登录成功'

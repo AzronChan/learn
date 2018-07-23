@@ -1,7 +1,7 @@
 <template>
 	<div class="user_info">
 		<div class="user_pic">
-			<img :src="userPic">
+			<img :src="userpic">
 			<van-uploader class='user_pic_uploader' :after-read="onRead">
 			  <van-icon name="photograph" />
 			</van-uploader>
@@ -30,7 +30,7 @@
 		name: 'userinfo',
 		data() {
 			return {
-				userPic : '/app/src/assets/images/user-pic.jpg'
+//				userPic : '/app/src/assets/images/user-pic.jpg'
 			}
 		},
 		computed: mapState({
@@ -38,9 +38,37 @@
 			username: state => state.userInfo.username,
 			sex: state => state.userInfo.sex
 		}),
+		created (){
+			let _t = this;
+			_t.userpic = (function(){
+				console.log(_t.$store.state.userInfo.userpic)
+				return _t.$store.state.userInfo.userpic ? _t.$store.state.userInfo.userpic : '/app/src/assets/images/user-pic.jpg'
+			})()
+		},
+		mounted (){
+			let _t = this;
+			_t.userid = (function(){
+				return _t.$store.state.userInfo.userid;
+			})()
+		},
 		methods : {
 			onRead(file) {
-				this.userPic = file.content
+				let _t = this;
+				this.userPic = file.content;
+				this.$http({
+					method : 'post',
+					url :'/api/v1/upload',
+					data : {
+						imgdata : file.content,
+						userid : _t.userid
+					}
+				}).then(({data}) => {
+					if (data.status == 1){
+						console.log('上传成功')
+					} else {
+						console.log('上传失败')
+					}
+				})
 		   	}
 		}
 	}

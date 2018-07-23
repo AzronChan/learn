@@ -17,6 +17,7 @@ var userSchema = new Schema({
     sex : Number,
  	mail : String,
     cards : Array,
+    userpic : String,
     createAt: {
         type: Date,
         default : Date.now()

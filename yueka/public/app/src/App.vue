@@ -61,7 +61,8 @@
 			if (cookie){
 				this.$store.commit('userInfo',{
 					userid :  this.$tool.Cookie.read('yueka','userid'),
-					username : this.$tool.Cookie.read('yueka','username')
+					username : this.$tool.Cookie.read('yueka','username'),
+					userpic : this.$tool.Cookie.read('yueka','userpic')
 				})
 				this.$router.push('/cardmanage');
 			} else {
