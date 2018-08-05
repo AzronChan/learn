@@ -118,7 +118,9 @@ router.post('/api/v1/upload',(req,res,next) => {
 				if (res1 && res1.ok == 1){
 					return res.send({
 						status : 1,
-						data: {},
+						data: {
+							userpic: imgUrl
+						},
 						errorcode : 0,
 						errormsg : ''
 					})

@@ -12,7 +12,9 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if'), //if 判断
     cssmin = require('gulp-clean-css'), //压缩CSS
     autoprefixer = require('gulp-autoprefixer'), //生成兼容前缀 -webkit-
-    spritesmith = require('gulp.spritesmith'); //雪碧图
+    spritesmith = require('gulp.spritesmith'), //雪碧图
+  	babel = require('gulp-babel'),
+  	browserify = require('browserify');
 
 //工具-压缩js
 gulp.task('uglifyjs', function () {
@@ -139,13 +141,16 @@ gulp.task('flow-scss', function () {
 //压缩JS
 gulp.task('flow-js', function () {
     return gulp.src('./src/js/*.js')
-        .pipe(sourcemaps.init())
-        .pipe(gulpif(release, uglify()))
-        .pipe(sourcemaps.write(''))
-        .pipe(gulpif(release, rev()))
+//      .pipe(sourcemaps.init())
+//      .pipe(gulpif(release, uglify()))
+//      .pipe(sourcemaps.write(''))
+//      .pipe(gulpif(release, rev()))
+        .pipe(babel({
+	      presets: ['es2015']
+	    }))
         .pipe(gulp.dest('./dist/js'))
-        .pipe(gulpif(release, rev.manifest()))
-        .pipe(gulpif(release, gulp.dest('./dist/js')))
+//      .pipe(gulpif(release, rev.manifest()))
+//      .pipe(gulpif(release, gulp.dest('./dist/js')))
 })
 
 //压缩图片

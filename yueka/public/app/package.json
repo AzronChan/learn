@@ -9,6 +9,7 @@
   "dependencies": {
     "vant": "^1.1.9",
     "vue": "^2.5.16",
+    "vue-cropper": "^0.2.9",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },

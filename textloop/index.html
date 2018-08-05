@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+			}
+			.text_area {
+				width: 200px;
+				height: 20px;
+				line-height: 20px;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.text_area span{
+				display: inline-block;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="text_area">
+			<span class="text">docs 目录下是文档网站的代码，本</span>
+		</div>
+		<script>
+			var timer = null;
+			function loopText(){
+				console.log(1)
+				clearTimeout(timer);
+				var $textArea = document.querySelector('.text_area'),
+					$text = document.querySelector('.text'),
+					diffWidth = $textArea.offsetWidth - $text.offsetWidth,
+					speed = 25,	//1秒滚动的距离
+					endResetTime = 2000,
+					startDelayTime = 1000
+				
+				//文字宽度小于父节点时
+				if (diffWidth < 0){
+					duration = diffWidth / speed;
+					$text.style.transitionProperty = 'all';
+					$text.style.transitionTimingFunction = 'linear';
+					$text.style.transform = 'translateX(' + diffWidth + 'px)';
+					$text.style.transitionDuration = -diffWidth / speed + 's';
+					$text.style.transitionDelay = startDelayTime / 1000 + "s";
+				}
+				
+				console.log(-diffWidth / speed * 1000 + 1000)
+				this.timer = setTimeout(function(){
+					$text.style.transform = 'translateX(0px)';
+					$text.style.transitionDuration = '0s';
+					$text.style.transitionDelay = "0s";
+					loopText();
+				},-diffWidth / speed * 1000 + startDelayTime + endResetTime)
+			}
+			loopText();
+		</script>
+	</body>
+</html>
