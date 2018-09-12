@@ -54,7 +54,8 @@
 		},
 		computed :mapState({
 			userID : state => state.userInfo.userid,
-			username : state => state.userInfo.username
+			username : state => state.userInfo.username,
+			token : state => state.userInfo.token
 		}),
 		methods: {
 			showPick(e, type) {
@@ -124,23 +125,28 @@
 				
 				if (_t.cardName == ''){
 					_t.errorMessage.cardName = '卡片名字不可为空';
-					return _t.submitBtnShowLoad = false;
+					_t.submitBtnShowLoad = false
+					return;
 				}
 				if (_t.depict == ''){
 					_t.errorMessage.depict = '卡片描述不可为空';
-					return _t.submitBtnShowLoad = false;
+					_t.submitBtnShowLoad = false
+					return;
 				}
 				if (_t.cardStartTimeFormat == ''){
 					_t.errorMessage.cardStartTime = '起始时间不可为空';
-					return _t.submitBtnShowLoad = false;
+					_t.submitBtnShowLoad = false
+					return ;
 				}
 				if (_t.cardEndTimeFormat == ''){
 					_t.errorMessage.cardEndTime = '结束时间不可为空';
-					return _t.submitBtnShowLoad = false;
+					_t.submitBtnShowLoad = false
+					return;
 				}
 				if (new Date(_t.cardStartTimeFormat).getTime() < new Date(_t.cardStartTimeFormat).getTime()){
 					_t.errorMessage.cardEndTime = '结束时间不能比起始时间前';
-					return _t.submitBtnShowLoad = false;
+					_t.submitBtnShowLoad = false
+					return;
 				}
 				
 				this.cardName.indexOf('卡') < 0 && (this.cardName += '卡');
@@ -154,7 +160,8 @@
 						startTime : this.cardStartTimeFormat,
 						endTime : this.cardEndTimeFormat,
 						cardname : this.cardName,
-						depict : this.depict
+						depict : this.depict,
+						token : this.token
 					}
 				}).then(({data})=>{
 					console.log(data);
@@ -168,7 +175,10 @@
     						_t.$router.push('/cardmanage');
     					},300)
 					} else {
-						
+						Toast.fail({
+	    					message : data.errorMsg,
+	    					duration: 300,
+	    				})
 					}
 				})
 				

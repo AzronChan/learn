@@ -1,14 +1,14 @@
 <template>
 	<div class="user_info">
 		<div class="user_pic">
-			<img :src="userpic">
+			<img :src="userpic" v-if="userpic != ''" alt="">
+			<img src="../assets/images/user-pic.jpg" v-if="userpic == false">
 			<van-uploader class='user_pic_uploader' :after-read="afterRead">
 			  <van-icon name="photograph" />
 			</van-uploader>
 			
 		</div>
 		<div class="block_title">
-			个人资料
 		</div>
 		<van-cell-group>
 			<van-cell :title="username" icon="contact"/>
@@ -17,26 +17,13 @@
 		</van-cell-group>
 		<div class="block_title">
 		</div>
-<!--		
-		<a href="javascirpt:;" @click="startCrop()">
-			开始截图
-		</a>-->
-		<div class="vue_cropper_area" v-show='cropperShow'>
-			<div class="vue_cropper">
-				<vueCropper
-					class='cropper'
-				  	ref="cropper"
-				  	:img="cropperOption.img"
-				  	:outputSize="cropperOption.outputSize"
-				  	:outputType="cropperOption.outputType"
-				  	:canMove='cropperOption.canMove'
-				  	:autoCrop='cropperOption.autoCrop'
-				  	:fixedNumber='cropperOption.fixedNumber'
-				  	:fixed='cropperOption.fixed'
-				  	:canScale='cropperOption.canScale'
-				></vueCropper>
+		<div class="cropper_area" v-show='cropperShow'>
+			<div class="pos">
+				<div class="user_crpper_area" id='vueCropperArea'></div>
+				<a href="javascript:;" class="cropper_area_cancel" @click="croperHandle('cancel')">取 消</a>
+				<a href="javascript:;" class="cropper_area_confirm"  @click="croperHandle('confirm')">确 定</a>
+				
 			</div>
-			<a href="javascript:;" @click="cropperCancel()">取消</a>
 		</div>
 		
 		
@@ -46,90 +33,109 @@
 <script>
 	import { mapState } from 'vuex'
 	import {Dialog,Toast} from 'vant';
-	import VueCropper from 'vue-cropper'
-	
+	import cropper from 'cropper';
+	import jquery from 'jquery';
 	
 	export default {
 		name: 'userinfo',
 		data() {
 			return {
-				cropperOption : {
-					img : '/app/src/assets/images/user-pic.jpg',
-					outputSize : 1,
-					outputType : 'jpeg',
-					canMove : false,
-					autoCrop : true,
-					full : true,
-					fixed :true,
-					fixedNumber : [1,1],
-					canScale:true,
-				},
 				cropperShow : false,
-				userpic : '/app/src/assets/images/user-pic.jpg'
+				cropper : null
 			}
 		},
 		components : {
-			VueCropper
+
 		},
 		computed: mapState({
 			// 箭头函数可使代码更简练
 			username: state => state.userInfo.username,
-			sex: state => state.userInfo.sex
+			sex: state => state.userInfo.sex,
+			userpic : state => state.userInfo.userpic,
+			userid : state => state.userInfo.userid
 		}),
-		created (){
-			let _t = this;
-			_t.userpic = (function(){
-				console.log(_t.$store.state.userInfo.userpic)
-				return _t.$store.state.userInfo.userpic ? _t.$store.state.userInfo.userpic : '/app/src/assets/images/user-pic.jpg'
-			})()
-		},
 		mounted (){
-			let _t = this;
-			_t.userid = (function(){
-				return _t.$store.state.userInfo.userid;
-			})()
+//			console.log(this.userpic)
 		},
 		methods : {
-			cropperCancel (){
-				this.cropperShow = !this.cropperShow;
-			},
-			startCrop(){
-				this.$refs.cropper.startCrop()
-				this.$refs.cropper.getCropData((data) => {
-				  this.onRead({
-				  	content:data
-				  })
-				})
-			},
+			/*
+			 * 读取图片
+			 */
 			afterRead (file){
 				this.cropperShow = !this.cropperShow;
-				this.cropperOption.img = file.content
+				
+				let uploadImg = this.uploadImg;
+				
+				var img = new Image;
+				img.src = file.content;
+				img.id= 'image';
+				img.onload = () => {
+					this.cropper = jquery('#image');
+					this.cropper.cropper({
+					  aspectRatio: 1 / 1,
+					  crop: function(event) {
+					  	
+					  }
+					});
+				}
+				
+				document.getElementById('vueCropperArea').appendChild(img)
+				
 			},
-			onRead(file) {
+			/*
+			 * 上传图片
+			 */
+			uploadImg(obj) {
 				let _t = this;
-				this.userPic = file.content;
+				this.userPic = obj.content;
 				this.$http({
 					method : 'post',
 					url :'/api/v1/upload',
 					data : {
-						imgdata : file.content,
+						imgdata : obj.content,
 						userid : _t.userid
 					}
 				}).then(({data}) => {
 					if (data.status == 1 && data.data.userpic){
+//						_t.userpic = data.data.userpic.replace('localhost','192.168.31.129') + '?t=2232321666';
 						
-						_t.userpic = data.data.userpic;
-						console.log(_t.userpic)
+						this.$store.commit('userInfo',{
+							userpic : data.data.userpic
+						})
+						
 					} else {
 						console.log('上传失败')
+						Toast.fail({
+	    					message : '上传失败，请重试',
+	    					duration: 600,
+	    				})
 					}
 				})
-		   	}
+		  },
+		  /*
+		   * 截图操作
+		   */
+		  croperHandle (type) {
+		  	this.cropperShow = !this.cropperShow;
+		  	if (type === 'confirm'){
+		  		let canvas = this.cropper.cropper('getCroppedCanvas'),
+        			base64url = canvas.toDataURL('image/jpeg',.7);
+//      		console.log(base64url)
+        		this.uploadImg({
+        			content : base64url
+        		})
+		  	}
+		  	
+		  	this.cropper.cropper('cropper');
+		  	document.getElementById('vueCropperArea').innerHTML = '';
+		  	
+		  }
 		}
 	}
 </script>
 
 <style lang="scss">
+	@import url("../assets/css/cropper.scss");
 	.user_info {
 		position: relative;
 		width: 100%;
@@ -162,18 +168,52 @@
 			border-radius: 50%;
 		}
 	}
-	.vue_cropper_area {
+	.cropper_area {
 		position: fixed;
 		top: 0px;
 		left: 0px;
 		z-index: 3;
 		width: 100%;
 		height: 100%;
+		background: #000;
+		.pos {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			a {
+				position: absolute;
+				bottom: .7rem;
+				color: #fff;
+				line-height: 100%;
+				font-size: .55rem;
+				&.cropper_area_cancel {
+					left: .8rem;
+					font-size: .4rem;
+					
+				}
+				&.cropper_area_confirm {
+					right: .8rem;
+				}
+			}
+		}
+	}
+	.user_crpper_area {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		width: 100%;
+		max-height: 50%;
+		img {
+			max-width: 100%;
+			display: block;
+		}
 	}
 	.vue_cropper {
 		position: relative;
 		height: 70%;
 		width: 100%;
+		
 	}
 	.cropper {
 		top: 0;

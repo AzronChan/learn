@@ -14,12 +14,16 @@
 	import TabBar from './components/TabBar.vue';
 	
 	import { mapState } from 'vuex'
+	
+	
 
 	(function() {
 		var html = document.querySelector("html"),
 			rem = html.offsetWidth / 7.5;
 		html.style.fontSize = rem + "px";
 	})();
+	
+	 
 
 	Date.prototype.format = function(format) {
 		var o = {
@@ -57,14 +61,26 @@
 			navBarShow: state => state.navBarShow
 		}),
 		created (){
+			//页面加载请求用户信息
 			let cookie = this.$tool.Cookie.read('yueka');
-			if (cookie){
-				this.$store.commit('userInfo',{
-					userid :  this.$tool.Cookie.read('yueka','userid'),
-					username : this.$tool.Cookie.read('yueka','username'),
-					userpic : this.$tool.Cookie.read('yueka','userpic')
+		
+			if (cookie && this.$tool.Cookie.read('yueka','userid') && this.$tool.Cookie.read('yueka','token')){
+				this.getUserInfo({
+					userid : this.$tool.Cookie.read('yueka','userid'),
+					token : this.$tool.Cookie.read('yueka','token')
+				},(data) => {
+					console.log(data)
+					if (data.status == 1){
+						this.$store.commit('userInfo',data.data)
+					} else {
+						this.$store.commit('userInfo',{
+							userid :  this.$tool.Cookie.read('yueka','userid'),
+							username : this.$tool.Cookie.read('yueka','username'),
+							userpic : this.$tool.Cookie.read('yueka','userpic')
+						})
+					}
+					this.$router.push('/cardmanage');
 				})
-				this.$router.push('/cardmanage');
 			} else {
 				this.$router.push('/login')
 			}
@@ -79,7 +95,6 @@
 				}
 				console.log(to.name)
 				if (to.name == 'userinfo'){
-					console.log(111)
 					this.$store.commit('rightText','注销');
 				} else {
 					this.$store.commit('rightText','');
@@ -96,6 +111,24 @@
 				}
 			}
 		},
+		methods : {
+			getUserInfo : function(obj,callback) {
+				this.$http({
+	    			method:'get',
+	    			url : '/api/v1/get_user_info',
+	    			params : {
+	    				userid : obj.userid,
+	    				token : obj.token
+	    			}
+	    		}).then(({data}) => {
+	    			if (data.status == 1){
+	    				callback && callback(data)
+	    			} else {
+	    				callback && callback(data)
+	    			}
+	    		})
+			}
+		}
 	}
 </script>
 

@@ -28,6 +28,22 @@ export default {
     		_t.loginBtnShowLoad = true;
     		//TODO
     		//用户名或者密码为空
+    		if (this.username.replace(/\s/g,'') == ''){
+    			Toast({
+					message : '用户名不可为空',
+					forbidClick : true,
+				});
+				_t.loginBtnShowLoad = false;
+				return;
+    		}
+    		if (this.password.replace(/\s/g,'') == ''){
+    			Toast({
+					message : '密码不可为空',
+					forbidClick : true,
+				});
+				_t.loginBtnShowLoad = false;
+				return;
+    		}
     		this.$http({
     			method:'get',
     			url : '/api/v1/signin',
@@ -36,7 +52,6 @@ export default {
     				password : _t.password
     			}
     		}).then(({data}) => {
-    			console.log(data);
     			if (!data){
     				//请求失败
     				//TODO
@@ -45,6 +60,8 @@ export default {
     			if (data.status == 1){
     				let _data = data.data,_str = '';
     				
+    				console.log(_data)
+    				console.log(1111)
     				_t.$store.commit('userInfo',_data);
     				
     				

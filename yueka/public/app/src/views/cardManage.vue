@@ -76,19 +76,20 @@
 						title :'已使用卡片',
 						data : []
 					}
-				]
+				],
+				aa : 1
 			}
 		},
 		computed :mapState({
-			userID : state => state.userInfo.userid
+			userID : state => state.userInfo.userid,
+			token : state => state.userInfo.token,
+			username : state => state.userInfo.username
 		}),
-		mounted (){
-			let _t = this;
+		created (){
 			
-			_t.username = (function(){
-				return _t.$store.state.userInfo.username;
-			})()
-			_t.getCard();
+		},
+		mounted (){
+			var _t = this;
 			
 		},
 		methods: {
@@ -96,14 +97,15 @@
 				this.tabShowing = title;
 			},
 			getCard (){
-				console.log('=======>获取卡片信息')
 				let _t = this;
+				
 				this.$http({
 					method : 'get',
 					url  : '/api/v1/getMyCard',
 					params : {
 						t : Math.random(),
-						username : _t.username
+						username : this.username,
+						token : this.token
 					}
 				}).then(({data}) => {
 					if (data.status == 1){
@@ -114,12 +116,14 @@
 							if (_arr[i].useStatus == 1){
 								_t.tabs[1].data.push(_arr[i])
 							} else {
-								console.log(111111)
-								
 								_t.tabs[0].data.push(_arr[i])
 							}
 						}
-						
+					} else {
+						Toast.fail({
+	    					message : data.errormsg || '网络异常，请重试',
+	    					duration: 600,
+	    				})
 					}
 				}).catch(() => {
 					Toast('网络异常，请重试')
@@ -286,6 +290,12 @@
 					});
 				}
 				
+			}
+		},
+		watch : {
+
+			token (){
+				this.getCard();
 			}
 		}
 	}

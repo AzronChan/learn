@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+//import axios from 'axios'	//请求
+
+//Vuex.Store.prototype.$http = axios
 
 Vue.use(Vuex)
 
@@ -10,7 +13,9 @@ export default new Vuex.Store({
 			userid : 0,
 			username : '',
 			location : '',
-			sign : ''
+			sign : '',
+			userpic : '',
+			token : ''
 		},
 		tabBarShow:true,
 		rightText : ''
@@ -26,8 +31,12 @@ export default new Vuex.Store({
 			console.log(payload)
 			state.tabBarShow = payload
 		},
+		/*
+		 * 修改用户信息
+		 */
 		userInfo (state,payload) {
-			state.userInfo = payload
+			let _obj = Object.assign(state.userInfo,payload)
+			state.userInfo = _obj
 		}
 	},
 	actions: {

@@ -7,7 +7,11 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "alloycrop": "^1.0.4",
+    "cropper": "^4.0.0",
+    "jquery": "^3.3.1",
     "vant": "^1.1.9",
+    "vconsole": "^3.2.0",
     "vue": "^2.5.16",
     "vue-cropper": "^0.2.9",
     "vue-router": "^3.0.1",

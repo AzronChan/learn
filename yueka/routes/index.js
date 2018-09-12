@@ -1,11 +1,13 @@
-var express = require('express');
-var router = express.Router(),
-	util = require('../models/util'),
-	user = require('../models/user'),
-	cardIdCounter = require('../models/cardIdCounter'),
-	errorBase = require('../models/error-base');
+const express = require('express');
+const router = express.Router();
+const util = require('../models/util');
+const user = require('../models/user');
+const cardIdCounter = require('../models/cardIdCounter');
+const errorBase = require('../models/error-base');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 Date.prototype.format = function(format) {
     var o = {
@@ -62,7 +64,7 @@ function errHandle(res,obj){
 
 
 /**
- * @description ID生成器
+ * @description 用户，卡片ID生成器
  * @param {String} sequenceName 自增器名称
  */
 function getNextSequenceValue(sequenceName,callback){
@@ -73,6 +75,46 @@ function getNextSequenceValue(sequenceName,callback){
    			callback && callback(doc.sequence_value);
    		}
    	})
+}
+
+/*
+ * token验证中间件
+ */
+function confirmToken(){
+	return function(req,res,next){
+		if (!util.isEmptyObject(req.query)){
+			res.send(JSON.stringify({
+				status : 0,
+				data: {},
+				errorcode : 0,
+				errormsg : '参数错误'
+			}))
+		} else if(!req.query.token){
+			console.log(2222)
+			return errHandle(res,{
+				errorName : 'tokenMisErr'
+			})
+		} else {
+			jwt.verify(req.query.token, config.jwtsecret, function (err, decoded) {
+		    	if (!err){
+		          	next();
+		     	} else {
+		     		if (err){
+		     			console.log(11111)
+		     			if (err.name == 'TokenExpiredError'){
+		     				return errHandle(res,{
+								errorName : 'TokenExpiredError'
+							})
+		     			} else {
+		     				return errHandle(res,{
+								errorName : 'JsonWebTokenError'
+							})
+		     			}
+		     		}
+		     	}
+			})
+		}
+	}
 }
 
 
@@ -100,9 +142,6 @@ router.post('/api/v1/upload',(req,res,next) => {
     	time = new Date().format('yyyy-MM-dd-hh-mm-ss-S').split('-').join(''),
     	imgPath = path.join(__dirname,'../public/upload/' + time+'.png'),
     	dataBuffer = new Buffer(base64Data, 'base64');
-   
-   	console.log(imgPath)
-   	console.log(time)
    	
    	checkMadeDir(imgPath);
 	 fs.writeFile(imgPath, dataBuffer, function(err) {
@@ -111,7 +150,7 @@ router.post('/api/v1/upload',(req,res,next) => {
         } else {
         	console.log(req.body.userid,imgPath)
         	//TODO
-        	let imgUrl = 'http://localhost:3000/upload/' + time + '.png'
+        	let imgUrl = 'http://192.168.31.129:3000/upload/' + time + '.png'
         	user.updateOne({
 				userid : req.body.userid
 			},{userpic : imgUrl},function(err,res1){
@@ -156,6 +195,11 @@ router.get('/api/v1/signin',function(req,res,next){
 			}
 			if (doc){
 				if (doc.password == data.password){
+					let token = jwt.sign({
+					    name: 'czl'
+					}, config.jwtsecret, {
+					    expiresIn:  '30 days' //秒到期时间
+					});
 					res.send(JSON.stringify({
 						status : 1,
 						data: {
@@ -164,7 +208,8 @@ router.get('/api/v1/signin',function(req,res,next){
 							location : doc.location,
 							userid : doc.userid,
 							sex : doc.sex,
-							userpic : doc.userpic || ''
+							userpic : doc.userpic || '',
+							token : token
 						},
 						errorcode : 0,
 						errormsg : '登录成功'
@@ -174,6 +219,56 @@ router.get('/api/v1/signin',function(req,res,next){
 						errorName : 'loginPswErr'
 					})
 				}
+			} else {
+				return errHandle(res,{
+					errorName : 'userNotfind'
+				})	
+			}
+		})
+		
+	}
+})
+
+
+/*
+ * 获取用户信息
+ */
+router.get('/api/v1/get_user_info',confirmToken(),function(req,res,next){
+	console.log(req.query,typeof req.query);
+	if (!util.isEmptyObject(req.query)){
+		res.send(JSON.stringify({
+			status : 0,
+			data: {},
+			errorcode : 0,
+			errormsg : '参数错误'
+		}))
+	} else {
+		let data = req.query;
+		console.log(data.userid)
+		user.findOne({userid : data.userid},function(err,doc){
+			if (err){
+				return res.send('链接异常');
+			}
+			if (doc){
+				let token = jwt.sign({
+				    name: 'czl'
+				}, config.jwtsecret, {
+				    expiresIn:  '30 days' //秒到期时间
+				});
+				res.send(JSON.stringify({
+					status : 1,
+					data: {
+						username : doc.username,
+						age : doc.age,
+						location : doc.location,
+						userid : doc.userid,
+						sex : doc.sex,
+						userpic : doc.userpic || '',
+						token : token
+					},
+					errorcode : 0,
+					errormsg : '登录成功'
+				}))
 			} else {
 				return errHandle(res,{
 					errorName : 'userNotfind'
@@ -276,7 +371,7 @@ router.get('/api/v1/getMyCard',function(req,res,next){
  * endTime 结束有效期
  * receiver 卡片被赠送者
  */
-router.get('/api/v1/creatMyCard',function(req,res,next){
+router.get('/api/v1/creatMyCard', confirmToken(),function(req,res,next){
 	let data = req.query;
 	if (!data.username || !data.userid){
 		res.send({

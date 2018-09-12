@@ -11,6 +11,9 @@ var userSchema = new Schema({
     password: {
         type: String
     },
+    token: {
+        type: String
+    },
     age: Number,
     location : String,
     tel : Number,
@@ -22,6 +25,7 @@ var userSchema = new Schema({
         type: Date,
         default : Date.now()
     }
+    
 });
 // 将数据模型暴露出去
 module.exports = mongoose.model('users', userSchema);

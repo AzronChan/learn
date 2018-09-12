@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'	//请求
 import {tool} from './models/tool'
+import VConsole from 'vconsole'
 
 import { Button,Cell,Field,List,CellGroup,Popup,Dialog,Toast,PasswordInput,NumberKeyboard,NavBar,RadioGroup,Radio,Actionsheet,DatetimePicker,Tabbar,TabbarItem,Icon,Tab,Tabs,  Collapse, CollapseItem ,Uploader} from 'vant';
 
@@ -15,6 +16,8 @@ Vue.use(Button).use(Cell).use(Field).use(CellGroup).use(Popup).use(Dialog).use(T
 Vue.prototype.$http = axios
 
 Vue.prototype.$tool = tool
+
+const vconsole = new VConsole();
 
 const vm = new Vue({
   router,
