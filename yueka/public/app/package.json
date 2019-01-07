@@ -7,14 +7,20 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "alloycrop": "^1.0.4",
+    "cropper": "^4.0.0",
+    "jquery": "^3.3.1",
     "vant": "^1.1.9",
+    "vconsole": "^3.2.0",
     "vue": "^2.5.16",
+    "vue-cropper": "^0.2.9",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-beta.15",
     "@vue/cli-service": "^3.0.0-beta.15",
+    "axios": "^0.18.0",
     "babel-plugin-import": "^1.8.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",

@@ -1,0 +1,7 @@
+{{each data item index}}
+<ul>
+    <li>
+        {{item.id}}. {{item.firstName}} - {{item.lastName}}
+    </li>
+</ul>
+{{/each}}

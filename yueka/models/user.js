@@ -7,16 +7,25 @@ var userSchema = new Schema({
         type: String,
         unique: true
     },
+    userid : Number,
     password: {
         type: String
     },
+    token: {
+        type: String
+    },
     age: Number,
-    address: String,
+    location : String,
+    tel : Number,
+    sex : Number,
+ 	mail : String,
     cards : Array,
+    userpic : String,
     createAt: {
         type: Date,
         default : Date.now()
     }
+    
 });
 // 将数据模型暴露出去
 module.exports = mongoose.model('users', userSchema);
