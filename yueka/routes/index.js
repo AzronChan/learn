@@ -295,7 +295,6 @@ router.get('/api/v1/signup',function(req,res,next){
 	}
 	getNextSequenceValue('userid',(data1) => {
 		user.findOne({username : data.username},function(err,doc){
-//			console.log(err,doc);
 			if (err){
 				res.send('链接异常')
 			}
@@ -318,7 +317,8 @@ router.get('/api/v1/signup',function(req,res,next){
 							username : doc.username,
 							age : doc.age,
 							location : doc.location,
-							tel : doc.tel
+							tel : doc.tel,
+							confirmMail : 0,
 						},
 						errorcode : 0,
 						errormsg : ''
@@ -435,8 +435,7 @@ router.get('/api/v1/creatMyCard', confirmToken(),function(req,res,next){
  * endTime 结束有效期
  * receiver 卡片被赠送者
  */
-router.get('/api/v1/handle',function(req,res,next){
-	console.log(11111)
+router.get('/api/v1/handle',confirmToken(),function(req,res,next){
 	let data = req.query;
 	if (!data.username || !data.cardid || !data.type){
 		res.send({

@@ -4,7 +4,7 @@
 			<h3 class="title">创建卡片</h3>
 			<van-cell-group>
 
-				<van-field v-model="cardName" required clearable label="卡片名"  placeholder="请输入卡片名字" :error-message="errorMessage.cardName" @input="inpChange({type:'cardName'})"/>
+				<van-field v-model="cardName" required clearable  label="卡片名"  placeholder="请输入卡片名字" :error-message="errorMessage.cardName" @input="inpChange({type:'cardName'})"/>
 
 				<van-field v-model="depict"  required label="描述" placeholder="描述你的卡片、用于提供什么服务，嘿嘿" :error-message="errorMessage.depict" @input="inpChange({type:'depict'})"/>
 
@@ -170,7 +170,7 @@
 	    					message : '创建成功',
 	    					duration: 300,
 	    				})
-						
+						this.$store.dispatch('getCard',{})
 						setTimeout(function(){
     						_t.$router.push('/cardmanage');
     					},300)

@@ -67,67 +67,24 @@
 				giveCardDialogShow : false,
 				giveCardIndex : 0,
 				tabShowing : '',
-				tabs : [
-					{
-						title :'我的卡片',
-						data : []
-					},
-					{
-						title :'已使用卡片',
-						data : []
-					}
-				],
 				aa : 1
 			}
 		},
 		computed :mapState({
 			userID : state => state.userInfo.userid,
 			token : state => state.userInfo.token,
-			username : state => state.userInfo.username
+			username : state => state.userInfo.username,
+			tabs : state => state.cardList
 		}),
 		created (){
 			
 		},
 		mounted (){
 			var _t = this;
-			
 		},
 		methods: {
 			tabClick (index,title){
 				this.tabShowing = title;
-			},
-			getCard (){
-				let _t = this;
-				
-				this.$http({
-					method : 'get',
-					url  : '/api/v1/getMyCard',
-					params : {
-						t : Math.random(),
-						username : this.username,
-						token : this.token
-					}
-				}).then(({data}) => {
-					if (data.status == 1){
-						let _arr = data.data;
-						_t.tabs[1].data = [];
-						_t.tabs[0].data = [];
-						for (let i = 0; i < _arr.length; i++){
-							if (_arr[i].useStatus == 1){
-								_t.tabs[1].data.push(_arr[i])
-							} else {
-								_t.tabs[0].data.push(_arr[i])
-							}
-						}
-					} else {
-						Toast.fail({
-	    					message : data.errormsg || '网络异常，请重试',
-	    					duration: 600,
-	    				})
-					}
-				}).catch(() => {
-					Toast('网络异常，请重试')
-				})
 			},
 			routerLink(type){
 				this.$router.push({ path: '/' + type });
@@ -148,7 +105,8 @@
 					params = {
 						type : obj.type,
 						cardid : data.id,
-						username : data.giver
+						username : data.giver,
+						token : this.token
 					};
 				switch (obj.type){
 					case 'delete':
@@ -182,9 +140,7 @@
 	    					message : successMsg,
 	    					duration: 600,
 	    				})
-						setTimeout(()=>{
-							_t.getCard();
-						},1000)
+						this.$store.dispatch('getCard',{})
 						cb && cb();
 					} else {
 						//操作失败
@@ -193,6 +149,7 @@
 	    					duration: 600,
 	    				})
 						cb && cb();
+						
 					}
 				}).catch(()=>{
 					Toast('网络异常，请重试')
@@ -293,10 +250,10 @@
 			}
 		},
 		watch : {
-
-			token (){
-				this.getCard();
-			}
+//
+//			token (){
+//				this.getCard();
+//			}
 		}
 	}
 </script>

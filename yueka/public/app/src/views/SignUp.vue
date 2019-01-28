@@ -3,15 +3,15 @@
 		<div class="sign_up_box">
 			<h3 class="title">注 册</h3>
 			<van-cell-group>
-				<van-field v-model="username" required clearable label="用户名" icon="question" placeholder="请输入用户名" @click-icon="$toast('question')" :error='usernameErr' @input="inpChange({type:'username'})"/>
+				<van-field v-model="mail" required label="邮箱地址" placeholder="请输入邮箱地址" :error-message="errorMessage.mail" @input="inpChange({type:'mail'})"/>
+				
+				<van-field v-model="username" required label="用户名" clearable  icon="question" placeholder="请输入用户名" @click-icon="$toast('question')" :error='usernameErr' @input="inpChange({type:'username'})"/>
 
-				<van-field v-model="password" type="password" label="密码" placeholder="请输入密码" required @click='passwordClick($event)' :error-message="errorMessage.password" @input="inpChange({type:'password'})"/>
+				<van-field v-model="password" required type="password" label="密码" placeholder="请输入密码" :error-message="errorMessage.password" @click='passwordClick($event)'  @input="inpChange({type:'password'})"/>
 
-				<van-field v-model="confirmPassword" type="password" label="重复密码" placeholder="请再次输入密码" required @click='passwordClick($event)' :error-message="errorMessage.confirmPassword" @input="inpChange({type:'confirmPassword'})"/>
+				<van-field v-model="confirmPassword" required type="password" label="重复密码" placeholder="请再次输入密码" :error-message="errorMessage.confirmPassword" @input="inpChange({type:'confirmPassword'})" @click='passwordClick($event)'  />
 
 				<van-field v-model="tel" required label="手机号" placeholder="请输入手机号" :error-message="errorMessage.tel" @input="inpChange({type:'tel'})"/>
-				
-				<van-field v-model="mail" required label="邮箱地址" placeholder="请输入邮箱地址" :error-message="errorMessage.mail" @input="inpChange({type:'mail'})"/>
 				
 				<van-radio-group v-model="sex">
 				    <van-cell title="男生" clickable @click="sex = '1'">

@@ -12,8 +12,6 @@
 		</div>
 		<van-cell-group>
 			<van-cell :title="username" icon="contact"/>
-			<!--<van-cell :title="location" icon="location"/>
-			<van-cell :title="sign" icon="sign"/>-->
 		</van-cell-group>
 		<div class="block_title">
 		</div>
@@ -55,7 +53,6 @@
 			userid : state => state.userInfo.userid
 		}),
 		mounted (){
-//			console.log(this.userpic)
 		},
 		methods : {
 			/*
@@ -93,12 +90,11 @@
 					url :'/api/v1/upload',
 					data : {
 						imgdata : obj.content,
-						userid : _t.userid
+						userid : _t.userid,
+						token : this.token
 					}
 				}).then(({data}) => {
 					if (data.status == 1 && data.data.userpic){
-//						_t.userpic = data.data.userpic.replace('localhost','192.168.31.129') + '?t=2232321666';
-						
 						this.$store.commit('userInfo',{
 							userpic : data.data.userpic
 						})

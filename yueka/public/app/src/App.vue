@@ -71,15 +71,12 @@
 				},(data) => {
 					console.log(data)
 					if (data.status == 1){
-						this.$store.commit('userInfo',data.data)
+						this.$store.commit('userInfo',data.data);
+						this.$router.push('/cardmanage');
+						this.$store.dispatch('getCard',{})
 					} else {
-						this.$store.commit('userInfo',{
-							userid :  this.$tool.Cookie.read('yueka','userid'),
-							username : this.$tool.Cookie.read('yueka','username'),
-							userpic : this.$tool.Cookie.read('yueka','userpic')
-						})
+						this.$router.push('/login')
 					}
-					this.$router.push('/cardmanage');
 				})
 			} else {
 				this.$router.push('/login')

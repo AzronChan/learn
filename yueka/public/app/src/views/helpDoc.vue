@@ -7,7 +7,7 @@
 		  <van-collapse-item title="问题2" name="2">
 		  	回答2
 		  </van-collapse-item>
-
+			<div class=""></div>
 		</van-collapse>
 	</div>
 </template>

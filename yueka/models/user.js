@@ -21,6 +21,12 @@ var userSchema = new Schema({
  	mail : String,
     cards : Array,
     userpic : String,
+    /*
+     * 是否验证过邮箱
+     * 0 ： 没验证
+     * 1 : 验证过
+     */
+    confirmMail : Number,
     createAt: {
         type: Date,
         default : Date.now()
