@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("var map = {\n\t\"./Cookie/Cookie.js\": \"./models/Cookie/Cookie.js\",\n\t\"./Regexp/testMail.js\": \"./models/Regexp/testMail.js\",\n\t\"./Regexp/testTel.js\": \"./models/Regexp/testTel.js\",\n\t\"./array/bubbleSort.js\": \"./models/array/bubbleSort.js\",\n\t\"./array/isArray.js\": \"./models/array/isArray.js\",\n\t\"./array/unique.js\": \"./models/array/unique.js\",\n\t\"./device/UA.js\": \"./models/device/UA.js\",\n\t\"./device/getOs.js\": \"./models/device/getOs.js\",\n\t\"./dom/Offset.js\": \"./models/dom/Offset.js\",\n\t\"./dom/deepClone.js\": \"./models/dom/deepClone.js\",\n\t\"./dom/keyboard.js\": \"./models/dom/keyboard.js\",\n\t\"./object/isEmptyObject.js\": \"./models/object/isEmptyObject.js\",\n\t\"./test/index.js\": \"./models/test/index.js\",\n\t\"./url/getSearchData.js\": \"./models/url/getSearchData.js\",\n\t\"./url/getUrlData.js\": \"./models/url/getUrlData.js\"\n};\n\n\nfunction webpackContext(req) {\n\tvar id = webpackContextResolve(req);\n\treturn __webpack_require__(id);\n}\nfunction webpackContextResolve(req) {\n\tvar id = map[req];\n\tif(!(id + 1)) { // check for number or string\n\t\tvar e = new Error(\"Cannot find module '\" + req + \"'\");\n\t\te.code = 'MODULE_NOT_FOUND';\n\t\tthrow e;\n\t}\n\treturn id;\n}\nwebpackContext.keys = function webpackContextKeys() {\n\treturn Object.keys(map);\n};\nwebpackContext.resolve = webpackContextResolve;\nmodule.exports = webpackContext;\nwebpackContext.id = \"./models sync recursive ^\\\\.\\\\/.+\\\\/.+\\\\.js$\";\n\n//# sourceURL=webpack:///./models_sync_^\\.\\/.+\\/.+\\.js$?");
+eval("var map = {\n\t\"./Cookie/Cookie.js\": \"./models/Cookie/Cookie.js\",\n\t\"./Regexp/testMail.js\": \"./models/Regexp/testMail.js\",\n\t\"./Regexp/testTel.js\": \"./models/Regexp/testTel.js\",\n\t\"./array/bubbleSort.js\": \"./models/array/bubbleSort.js\",\n\t\"./array/isArray.js\": \"./models/array/isArray.js\",\n\t\"./array/unique.js\": \"./models/array/unique.js\",\n\t\"./device/UA.js\": \"./models/device/UA.js\",\n\t\"./device/getOs.js\": \"./models/device/getOs.js\",\n\t\"./dom/Offset.js\": \"./models/dom/Offset.js\",\n\t\"./dom/deepClone.js\": \"./models/dom/deepClone.js\",\n\t\"./dom/keyboard.js\": \"./models/dom/keyboard.js\",\n\t\"./function/debounce.js\": \"./models/function/debounce.js\",\n\t\"./function/throttle.js\": \"./models/function/throttle.js\",\n\t\"./object/isEmptyObject.js\": \"./models/object/isEmptyObject.js\",\n\t\"./object/isTypeObject.js\": \"./models/object/isTypeObject.js\",\n\t\"./test/index.js\": \"./models/test/index.js\",\n\t\"./url/getSearchData.js\": \"./models/url/getSearchData.js\",\n\t\"./url/getUrlData.js\": \"./models/url/getUrlData.js\"\n};\n\n\nfunction webpackContext(req) {\n\tvar id = webpackContextResolve(req);\n\treturn __webpack_require__(id);\n}\nfunction webpackContextResolve(req) {\n\tvar id = map[req];\n\tif(!(id + 1)) { // check for number or string\n\t\tvar e = new Error(\"Cannot find module '\" + req + \"'\");\n\t\te.code = 'MODULE_NOT_FOUND';\n\t\tthrow e;\n\t}\n\treturn id;\n}\nwebpackContext.keys = function webpackContextKeys() {\n\treturn Object.keys(map);\n};\nwebpackContext.resolve = webpackContextResolve;\nmodule.exports = webpackContext;\nwebpackContext.id = \"./models sync recursive ^\\\\.\\\\/.+\\\\/.+\\\\.js$\";\n\n//# sourceURL=webpack:///./models_sync_^\\.\\/.+\\/.+\\.js$?");
 
 /***/ }),
 
@@ -229,6 +229,30 @@ eval("\n\n/**\r\n * \r\n * @desc H5软键盘缩回、弹起回调\r\n * 当软�
 
 /***/ }),
 
+/***/ "./models/function/debounce.js":
+/*!*************************************!*\
+  !*** ./models/function/debounce.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\n/**\r\n * @param  {Number}    delay 延时执行秒数，单位毫秒\r\n * @param  {Function}  callback 回调函数\r\n**/\nfunction debounce(callback, delay) {\n  var timeout = null;\n  return function () {\n    var _this = this,\n        _arguments = arguments;\n\n    clearTimeout(timeout);\n    timeout = setTimeout(function () {\n      callback.call(_this, _arguments);\n    }, delay);\n  };\n}\n\nmodule.exports = debounce;\n\n//# sourceURL=webpack:///./models/function/debounce.js?");
+
+/***/ }),
+
+/***/ "./models/function/throttle.js":
+/*!*************************************!*\
+  !*** ./models/function/throttle.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\n/**\r\n * @param  {Number}    delay 延时执行秒数，单位毫秒\r\n * @param  {Function}  callback 回调函数\r\n**/\nfunction throttle(callback, delay) {\n  var canRun = true;\n  return function () {\n    var _this = this,\n        _arguments = arguments;\n\n    if (!canRun) {\n      return;\n    }\n    canRun = false;\n    setTimeout(function () {\n      callback.call(_this, _arguments);\n      canRun = true;\n    }, delay);\n  };\n}\n\nmodule.exports = throttle;\n\n//# sourceURL=webpack:///./models/function/throttle.js?");
+
+/***/ }),
+
 /***/ "./models/index.js":
 /*!*************************!*\
   !*** ./models/index.js ***!
@@ -250,6 +274,18 @@ eval("\n\n/**\r\n * @desc webpack打包入口文件  \r\n */\nvar moduleExports 
 
 "use strict";
 eval("\n\n/**\r\n * @desc 判断是否空数组\r\n * @param {Object} \r\n * @return {Boolean}\r\n */\nfunction isEmptyObject(obj) {\n  for (var i in obj) {\n    return true;\n  }\n  return false;\n}\n\nmodule.exports = isEmptyObject;\n\n//# sourceURL=webpack:///./models/object/isEmptyObject.js?");
+
+/***/ }),
+
+/***/ "./models/object/isTypeObject.js":
+/*!***************************************!*\
+  !*** ./models/object/isTypeObject.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\n/**\r\n * @desc 判断是否空数组\r\n * @param {Object} \r\n * @return {Boolean}\r\n */\nfunction isTypeObject(obj, type) {\n  return Object.prototype.toString.call(obj) === '[object ' + type + ']';\n}\n\nmodule.exports = isTypeObject;\n\n//# sourceURL=webpack:///./models/object/isTypeObject.js?");
 
 /***/ }),
 
